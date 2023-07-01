@@ -1,0 +1,10 @@
+version: "3"
+services:
+  db:
+    image: mysql
+    env_file:
+      - .env
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASS}"
