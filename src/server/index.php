@@ -16,9 +16,9 @@
     </head>
     <body>
         <div class="container-fluid">
-            <?php include('./view/header.php'); ?>
-            <?php include('./view/main.php'); ?>
-            <?php include('./view/footer.php'); ?>
+            <?php include('./views/header.php'); ?>
+            <?php include('./views/main.php'); ?>
+            <?php include('./views/footer.php'); ?>
         </div>
   </body>
 </html>
