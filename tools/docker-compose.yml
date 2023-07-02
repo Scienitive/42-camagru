@@ -3,6 +3,7 @@ version: "3"
 services:
   db:
     image: postgres
+    container_name: postgres_database
     restart: always
     ports:
       - 5432:5432
@@ -17,6 +18,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
+    container_name: pgadmin
     restart: always
     ports:
       - 8080:80
@@ -32,6 +34,7 @@ services:
 
   server:
     image: nginx
+    container_name: nginx_web_server
     ports:
       - 80:80
     depends_on:
@@ -46,6 +49,7 @@ services:
     build:
       context: php
       dockerfile: Dockerfile
+    container_name: php
     restart: always
     volumes:
       - ../src:/var/www/html
