@@ -1,10 +1,22 @@
 version: "3"
 services:
   db:
-    image: mysql
-    env_file:
-      - .env
+    image: postgres
+    restart: always
     ports:
-      - "${DB_PORT}:${DB_PORT}"
+      - 5432:5432
     environment:
-      MYSQL_ROOT_PASSWORD: "${DB_PASS}"
+      - POSTGRES_DB=${PG_DB}
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASS}
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGA_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGA_PASS}
+    depends_on:
+      - db

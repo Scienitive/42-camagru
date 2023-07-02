@@ -1,11 +1,12 @@
 YML_FILE		= ./docker-compose.yml
 DEV_YML_FILE	= ./docker-compose-dev.yml
+ENV_FILE		= ./.env
 
 all:
-	docker-compose -f $(YML_FILE) up --build
+	docker-compose -f $(YML_FILE) --env-file $(ENV_FILE) up --build
 
 dev:
-	docker-compose -f $(DEV_YML_FILE) up -d --build
+	docker-compose -f $(DEV_YML_FILE) --env-file $(ENV_FILE) up -d --build
 
 down:
 	docker-compose -f $(YML_FILE) down
