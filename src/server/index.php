@@ -15,10 +15,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Niconne&display=swap" rel="stylesheet">
     </head>
     <body>
-        <div class="container-fluid">
-            <?php include('./views/header.php'); ?>
-            <?php include('./views/main.php'); ?>
-            <?php include('./views/footer.php'); ?>
-        </div>
-  </body>
+        <?php include('./views/headers/header.php'); ?>
+        <?php include('./views/mains/main.php'); ?>
+    </body>
 </html>
