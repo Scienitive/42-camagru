@@ -2,35 +2,30 @@ version: "3"
 
 services:
   db:
-    image: postgres
-    container_name: postgres_database
+    image: mysql:latest
+    container_name: mysql_database
     restart: always
     ports:
-      - 5432:5432
+      - 3306:3306
     environment:
-      - POSTGRES_DB=${PG_DB}
-      - POSTGRES_USER=${PG_USER}
-      - POSTGRES_PASSWORD=${PG_PASS}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASS}
     networks:
       - database
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - mysql-data:/var/lib/mysql
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
     restart: always
     ports:
       - 8080:80
     environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGA_EMAIL}
-      - PGADMIN_DEFAULT_PASSWORD=${PGA_PASS}
+      - PMA_ARBITRARY=1
     depends_on:
       - db
     networks:
       - database
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
 
   server:
     image: nginx
@@ -64,5 +59,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres-data:
-  pgadmin-data:
+  mysql-data:
