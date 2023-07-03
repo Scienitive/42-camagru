@@ -15,7 +15,9 @@
         <link href="https://fonts.googleapis.com/css2?family=Niconne&display=swap" rel="stylesheet">
     </head>
     <body>
-        <?php include('./views/headers/header.php'); ?>
-        <?php include('./views/mains/main.php'); ?>
+        <div class="vh-100 d-flex flex-column">
+            <?php include('./views/headers/header.php'); ?>
+            <?php include('./views/mains/main.php'); ?>
+        </div>
     </body>
 </html>
