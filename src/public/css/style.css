@@ -7,3 +7,9 @@
   -moz-user-select: none;
   -ms-user-select: none;
 }
+
+body {
+  background-image: url("../uploads/body-background.jpg");
+  background-size: cover;
+  background-repeat: repeat;
+}
