@@ -1,3 +1,5 @@
-FROM php:8.1-fpm-alpine
+FROM php:8.2-fpm
+
+RUN docker-php-ext-install mysqli
 
 WORKDIR /var/www/html
