@@ -5,10 +5,14 @@ $dbname = "camagru";
 $username = "root";
 $password = "123";
 
-$mysqli = new mysqli($host, $username, $password, $dbname, 3306);
+$dsn = "mysql:host=" . $host . ";dbname=" . $dbname;
 
-if ($mysqli->connect_errno) {
-    die('Connection Error: ' . $mysqli->connect_error);
+try {
+    $pdo = new PDO($dsn, $username, $password);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+}
+catch (PDOException $e) {
+    die("PDO Connection Failed: " . $e->getMessage());
 }
 
-return $mysqli;
+return $pdo;

@@ -1,12 +1,30 @@
 <?php
-
+session_start();
 if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) || empty($_POST['uname']) || empty($_POST['password'])) {
     die('Incorrect Input.');
 }
 
 $hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-$mysqli = require(__DIR__ . "/database.php");
+$pdo = require(__DIR__ . "/database.php");
 
-print_r($_POST);
-var_dump($hashed_password);
+$sql = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
+
+try {
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$_POST['email'], $_POST['uname'], $_POST['password']]);
+}
+catch (PDOException $e) {
+    if ($e->getCode() === "23000" && strpos($e->getMessage(), 'email') !== false) {
+        die("Email already taken.");
+    }
+    else if ($e->getCode() === "23000" && strpos($e->getMessage(), "username") !== false) {
+        die("Username already taken.");
+    }
+    else {
+        die("SQL Error: " . $e->getMessage());
+    }
+}
+$_SESSION['email-verification'] = true;
+header("Location: http://localhost");
+exit;
