@@ -11,7 +11,7 @@ services:
       - MYSQL_DATABASE=${MYSQL_DB}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASS}
     volumes:
-      - mysql-data:/var/lib/mysql
+      - ./mysql:/docker-entrypoint-initdb.d
 
   phpmyadmin:
     image: phpmyadmin:latest
@@ -43,6 +43,3 @@ services:
     restart: always
     volumes:
       - ../src:/var/www/html
-
-volumes:
-  mysql-data:
