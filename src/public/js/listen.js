@@ -8,7 +8,7 @@ const loadNewHTML = (elements, newMainView) => {
 }
 
 const setHeaderEventListeners = (mainView) => {
-    if (mainView === "login") {
+    /*if (mainView === "login") {
         const signupButton = document.getElementById("signup-button");
 
         signupButton.addEventListener('click', () => {
@@ -31,7 +31,7 @@ const setHeaderEventListeners = (mainView) => {
                 }
             });
         });
-    }
+    }*/
 }
 
 const setMainEventListeners = (mainView) => {
@@ -58,7 +58,7 @@ const setMainEventListeners = (mainView) => {
         })
     }
     else if (mainView === "email-verification") {
-        const loginButton = document.getElementById("back-to-login");
+        /*const loginButton = document.getElementById("back-to-login");
 
         loginButton.addEventListener('click', () => {
             AJAXPost("main-view.controller.php", { data: "login" }, async (response, formData) => {
@@ -67,11 +67,11 @@ const setMainEventListeners = (mainView) => {
                     loadNewHTML(elements, data[1])
                 }
             });
-        });
+        });*/
     }
 }
 
 export const setListeners = (mainView) => {
-    setHeaderEventListeners(mainView);
+    //setHeaderEventListeners(mainView);
     setMainEventListeners(mainView);
 }

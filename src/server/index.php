@@ -25,5 +25,6 @@
             </div>
         </div>
         <script src="../public/js/main.js" type="module"></script>
+        <script src="../public/js/router.js" type="module"></script>
     </body>
 </html>

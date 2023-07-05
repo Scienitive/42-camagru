@@ -1,6 +1,6 @@
 <?php
 
-if ($_SESSION['main-view'] === "login") {
+if ($_SESSION['main-view'] === "login" || $_SESSION['main-view'] === "home") {
     include(__DIR__ . '/visitor.login.header.view.php');
 }
 else if ($_SESSION['main-view'] === "sign-up" || $_SESSION['main-view'] === "email-verification") {
