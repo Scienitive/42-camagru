@@ -1,12 +1,13 @@
 <?php
-session_start();
+include(__DIR__ . "/../../session.php");
+
 if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) || empty($_POST['uname']) || empty($_POST['password'])) {
     die('Incorrect Input.');
 }
 
 $hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-$pdo = require(__DIR__ . "/database.php");
+$pdo = require(__DIR__ . "/../../database.php");
 
 $sql = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
 
@@ -25,6 +26,6 @@ catch (PDOException $e) {
         die("SQL Error: " . $e->getMessage());
     }
 }
-$_SESSION['email-verification'] = true;
-header("Location: http://localhost");
+$_SESSION['main-view'] = "email-verification";
 exit;
+?>

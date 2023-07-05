@@ -1,10 +1,13 @@
 <?php
 
-if (isset($_SESSION['email-verification']) && $_SESSION['email-verification'] === true) {
-    include('./views/mains/signup.verification.view.php');
+if ($_SESSION['main-view'] === "login") {
+    include(__DIR__ . "/login.view.php");
 }
-else {
-    include('./views/mains/signup.view.php');
+else if ($_SESSION['main-view'] === "sign-up") {
+    include(__DIR__ . "/signup.view.php");
+}
+else if ($_SESSION['main-view'] === "email-verification") {
+    include(__DIR__ . "/signup.verification.view.php");
 }
 
 ?>

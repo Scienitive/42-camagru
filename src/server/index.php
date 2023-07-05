@@ -1,4 +1,4 @@
-<?php session_start(); ?>
+<?php include("./controllers/session.php"); ?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -17,8 +17,13 @@
     </head>
     <body>
         <div class="vh-100 d-flex flex-column">
-            <?php include('./views/headers/header.php'); ?>
-            <?php include('./views/mains/main.php'); ?>
+            <div id="header-section">
+                <?php include('./views/headers/header.php'); ?>
+            </div>
+            <div id="main-section" class="d-flex flex-grow-1 align-items-center">
+                <?php include('./views/mains/main.php'); ?>
+            </div>
         </div>
+        <script src="../public/js/main.js" type="module"></script>
     </body>
 </html>
