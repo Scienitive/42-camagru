@@ -42,7 +42,7 @@ const urlRoute = (event) => {
 
 const urlLocationHandler = async (pathname) => {
     let location;
-    if (typeof(pathname) != "object") {
+    if (typeof(pathname) != "object") { // If it hasn't come from window.onpopstate
         location = pathname || window.location.pathname;
     }
     else {
@@ -58,7 +58,7 @@ const urlLocationHandler = async (pathname) => {
         const elements = await (await AJAXGet("main-view.controller.php")).json();
         loadNewHTML(elements);
     });
-    if (typeof(pathname) != "object") {
+    if (typeof(pathname) != "object") { // If it hasn't come from window.onpopstate
         window.history.pushState({data : location}, "", location);
     }
 };
