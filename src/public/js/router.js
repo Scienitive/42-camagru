@@ -10,11 +10,11 @@ document.addEventListener('click', (e) => {
 });
 
 const urlRoutes = {
-    "403": {
+    "/403": {
         mainView: "403",
         title: "Camagru | 403"
     },
-    "404": {
+    "/404": {
         mainView: "404",
         title: "Camagru | 404"
     },
@@ -49,7 +49,7 @@ const urlLocationHandler = async (pathname) => {
         location = window.location.pathname;
     }
 
-    let route = urlRoutes[location] || urlRoutes["404"];
+    let route = urlRoutes[location] || urlRoutes["/404"];
     await AJAXPost("main-view.controller.php", { data: route.mainView }, async (response, formData) => {
         const newMainView = await response.text();
         location = Object.keys(urlRoutes).find(key => {
