@@ -59,7 +59,7 @@ const urlLocationHandler = async (pathname) => {
         loadNewHTML(elements);
     });
     if (typeof(pathname) != "object") { // If it hasn't come from window.onpopstate
-        window.history.pushState({data : location}, "", location);
+        window.history.pushState({}, "", location);
     }
 };
 
