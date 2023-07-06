@@ -5,7 +5,7 @@
                 <div class="card-body p-5 text-center">
                     <h2 class="fw-bold mb-2 text-uppercase">Verification Link Sent!</h2>
                     <p class="text-white-50 mb-4">Please verify your account using the link that has been sent to your email.</p>
-                    <button id="back-to-login" class="btn btn-outline-light btn-lg px-5">Back To Login</button>
+                    <a class="btn btn-outline-light btn-lg px-5" href="/login" role="button">Back To Login</a>
                 </div>
             </div>
         </div>

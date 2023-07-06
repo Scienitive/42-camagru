@@ -1,18 +1,12 @@
 <?php
 include(__DIR__ . "/../../session.php");
 
-$_SESSION['main-view'] = $_POST['data'];
+$new_main_view = $_POST['data'];
+if ($new_main_view === "home") {
+    $new_main_view = "login";
+}
+$_SESSION['main-view'] = $new_main_view;
 
-$elements = [];
-
-ob_start();
-include(__DIR__ . "/../../../views/headers/header.php");
-$elements[] = ob_get_clean();
-ob_start();
-include(__DIR__ . "/../../../views/mains/main.php");
-$elements[] = ob_get_clean();
-
-header('Content-Type: application/json');
-echo json_encode($elements);
+echo $new_main_view;
 exit;
 ?>

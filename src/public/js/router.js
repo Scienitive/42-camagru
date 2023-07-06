@@ -1,16 +1,8 @@
-import { AJAXPost } from "./ajax.js";
-import { setListeners } from "./listen.js";
-
-const loadNewHTML = (elements, newMainView) => {
-    const [headerElement, mainElement] = elements;
-    document.getElementById('header-section').innerHTML = headerElement;
-    document.getElementById('main-section').innerHTML = mainElement;
-    setListeners(newMainView);
-}
+import { AJAXPost, AJAXGet } from "./ajax.js";
+import { loadNewHTML } from "./listen.js";
 
 document.addEventListener('click', (e) => {
     if (!e.target.matches("a")) {
-        console.log("asdsa")
         return;
     }
     e.preventDefault();
@@ -18,11 +10,11 @@ document.addEventListener('click', (e) => {
 });
 
 const urlRoutes = {
-    403: {
+    "403": {
         mainView: "403",
         title: "Camagru | 403"
     },
-    404: {
+    "404": {
         mainView: "404",
         title: "Camagru | 404"
     },
@@ -42,26 +34,33 @@ const urlRoutes = {
 
 const urlRoute = (event) => {
     event.preventDefault();
-    window.history.pushState({}, "", event.target.href);
-    urlLocationHandler();
+    const absoluteURL = event.target.href;
+    const url = new URL(absoluteURL);
+    const relativePath = url.pathname.length > 0 ? url.pathname : "/";
+    urlLocationHandler(relativePath);
 };
 
-const urlLocationHandler = async () => {
-    const location = window.location.pathname;
-    if (location.length == 0) {
-        location = "/";
-    }
+const urlLocationHandler = async (pathname) => {
+    let location = pathname || window.location.pathname;
+    console.log(location);
 
-    const route = urlRoutes[location] || urlRoutes[404];
-    AJAXPost("main-view.controller.php", { data: route.mainView }, async (response, formData) => {
-        const elements = await response.json();
-        for (let data of formData) {
-            loadNewHTML(elements, data[1])
-        }
+    let route = urlRoutes[location] || urlRoutes["404"];
+    console.log(route.mainView);
+    await AJAXPost("main-view.controller.php", { data: route.mainView }, async (response, formData) => {
+        const newMainView = await response.text();
+        console.log(newMainView);
+        location = Object.keys(urlRoutes).find(key => {
+            return Object.values(urlRoutes[key]).some(val => val.includes(newMainView));
+        });
+        console.log(location);
+        const elements = await (await AJAXGet("main-view.controller.php")).json();
+        loadNewHTML(elements);
     });
+    window.history.pushState({}, "", location);
 };
 
-window.onpopstate = urlLocationHandler;
-window.route = urlRoute;
+// Bu kısım şuan sıkıntılı
+//window.onpopstate = urlLocationHandler;
+//window.route = urlRoute;
 
 urlLocationHandler();

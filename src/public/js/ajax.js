@@ -25,7 +25,7 @@ export const AJAXPost = async (link, jsonData, callback) => {
         });
     
         if (response.ok) {
-            callback(await response, formData);
+            await callback(await response, formData);
         }
         else {
           throw new Error('AJAX request failed.');
