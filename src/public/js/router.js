@@ -41,26 +41,29 @@ const urlRoute = (event) => {
 };
 
 const urlLocationHandler = async (pathname) => {
-    let location = pathname || window.location.pathname;
-    console.log(location);
+    let location;
+    if (typeof(pathname) != "object") {
+        location = pathname || window.location.pathname;
+    }
+    else {
+        location = window.location.pathname;
+    }
 
     let route = urlRoutes[location] || urlRoutes["404"];
-    console.log(route.mainView);
     await AJAXPost("main-view.controller.php", { data: route.mainView }, async (response, formData) => {
         const newMainView = await response.text();
-        console.log(newMainView);
         location = Object.keys(urlRoutes).find(key => {
             return Object.values(urlRoutes[key]).some(val => val.includes(newMainView));
         });
-        console.log(location);
         const elements = await (await AJAXGet("main-view.controller.php")).json();
         loadNewHTML(elements);
     });
-    window.history.pushState({}, "", location);
+    if (typeof(pathname) != "object") {
+        window.history.pushState({data : location}, "", location);
+    }
 };
 
-// Bu kısım şuan sıkıntılı
-//window.onpopstate = urlLocationHandler;
-//window.route = urlRoute;
+window.onpopstate = urlLocationHandler;
+window.route = urlRoute;
 
 urlLocationHandler();
