@@ -1,4 +1,4 @@
-<?php include("./controllers/session.php"); ?>
+<?php include("./models/session.php"); ?>
 <!DOCTYPE html>
 <html lang="en">
     <head>

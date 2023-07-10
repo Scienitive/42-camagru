@@ -1,5 +1,5 @@
 <?php
-include(__DIR__ . "/../../session.php");
+include(__DIR__ . "/../../models/session.php");
 
 $new_main_view = $_POST['data'];
 

@@ -1,5 +1,5 @@
 <?php
-include(__DIR__ . "/../../session.php");
+include(__DIR__ . "/../../models/session.php");
 
 if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) || empty($_POST['uname']) || empty($_POST['password'])) {
     http_response_code(400); // 400 Bad Request
@@ -8,7 +8,7 @@ if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) || empty($_POST['uname']
 
 $hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-$pdo = require(__DIR__ . "/../../database.php");
+$pdo = require(__DIR__ . "/../../models/database.php");
 
 $sql = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
 

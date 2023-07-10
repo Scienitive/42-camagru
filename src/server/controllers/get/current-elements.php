@@ -1,13 +1,13 @@
 <?php
-include(__DIR__ . "/../../session.php");
+include(__DIR__ . "/../../models/session.php");
 
 $elements = [];
 
 ob_start();
-include(__DIR__ . "/../../../views/headers/header.php");
+include(__DIR__ . "/../../views/headers/header.php");
 $elements[] = ob_get_clean();
 ob_start();
-include(__DIR__ . "/../../../views/mains/main.php");
+include(__DIR__ . "/../../views/mains/main.php");
 $elements[] = ob_get_clean();
 
 header('Content-Type: application/json');

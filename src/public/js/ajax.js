@@ -18,7 +18,7 @@ export const makeFormData = (jsonData) => {
 export const AJAXPost = async (link, jsonData, callback) => {
     const formData = makeFormData(jsonData);
     try {
-        const response = await fetch("server/controllers/ajax/post/" + link, {
+        const response = await fetch("server/controllers/post/" + link, {
             method: 'POST',
             credentials: 'same-origin',
             body: formData
@@ -32,7 +32,7 @@ export const AJAXPost = async (link, jsonData, callback) => {
 
 export const AJAXGet = async (link) => {
     try {
-        const response = await fetch("server/controllers/ajax/get/" + link);
+        const response = await fetch("server/controllers/get/" + link);
         return response;
     }
     catch (error) {
