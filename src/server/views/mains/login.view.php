@@ -2,7 +2,7 @@
     <div class="row justify-content-center">
         <div class="col-10 col-md-8 col-lg-6 col-xl-5">
             <div class="card bg-dark text-white" style="border-radius: 1rem;">
-                <form class="card-body p-5 text-center" action="server/controllers/login.controller.php" method="post">
+                <form id="login-form" class="card-body p-5 text-center">
                     <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
                     <p class="text-white-50 mb-4">Please enter your login and password!</p>
 
