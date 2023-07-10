@@ -50,12 +50,12 @@ const urlLocationHandler = async (pathname) => {
     }
 
     let route = urlRoutes[location] || urlRoutes["/404"];
-    await AJAXPost("main-view.controller.php", { data: route.mainView }, async (response, formData) => {
+    await AJAXPost("route.controller.php", { data: route.mainView }, async (response, formData) => {
         const newMainView = await response.text();
         location = Object.keys(urlRoutes).find(key => {
             return Object.values(urlRoutes[key]).some(val => val.includes(newMainView));
         });
-        const elements = await (await AJAXGet("main-view.controller.php")).json();
+        const elements = await (await AJAXGet("current-elements.php")).json();
         loadNewHTML(elements);
     });
     if (typeof(pathname) != "object") { // If it hasn't come from window.onpopstate

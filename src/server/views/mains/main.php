@@ -1,7 +1,7 @@
 <?php
 if ($_SESSION['main-view'] === "home") {
     if (isset($_SESSION['user-id'])) {
-
+        echo "HOMEPAG";
     }
     else {
         include(__DIR__ . "/login.view.php");

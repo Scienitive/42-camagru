@@ -24,7 +24,7 @@ document.addEventListener('submit', async (e) => {
     if (e.target.id === "signup-form") {
         await AJAXPost("signup.controller.php", formData, async (response, formData) => {
             if (response.ok) {
-                const elements = await (await AJAXGet("main-view.controller.php")).json();
+                const elements = await (await AJAXGet("current-elements.php")).json();
                 loadNewHTML(elements);
             }
             else {
@@ -38,7 +38,8 @@ document.addEventListener('submit', async (e) => {
     else if (e.target.id === "login-form") {
         await AJAXPost("login.controller.php", formData, async (response, formData) => {
             if (response.ok) {
-                const elements = await (await AJAXGet("main-view.controller.php")).json();
+                window.location.replace("/");
+                const elements = await (await AJAXGet("current-elements.php")).json();
                 loadNewHTML(elements);
             }
             else {
