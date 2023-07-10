@@ -1,6 +1,13 @@
 <?php
+if ($_SESSION['main-view'] === "home") {
+    if (isset($_SESSION['user-id'])) {
 
-if ($_SESSION['main-view'] === "login" || $_SESSION['main-view'] === "home") {
+    }
+    else {
+        include(__DIR__ . "/login.view.php");
+    }
+}
+else if ($_SESSION['main-view'] === "login") {
     include(__DIR__ . "/login.view.php");
 }
 else if ($_SESSION['main-view'] === "sign-up") {

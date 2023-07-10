@@ -23,25 +23,29 @@ document.addEventListener('submit', async (e) => {
     const formData = new FormData(e.target);
     if (e.target.id === "signup-form") {
         await AJAXPost("signup.controller.php", formData, async (response, formData) => {
-            const errorText = await response.text();
-            if (errorText.length > 0) { // Error Happened
-
-            }
-            else {
+            if (response.ok) {
                 const elements = await (await AJAXGet("main-view.controller.php")).json();
                 loadNewHTML(elements);
+            }
+            else {
+                const errorMessage = await response.text();
+                const alertElement = document.getElementById('alert');
+                alertElement.textContent = errorMessage;
+                alertElement.classList.remove('d-none');
             }
         });
     }
     else if (e.target.id === "login-form") {
         await AJAXPost("login.controller.php", formData, async (response, formData) => {
-            const errorText = await response.text();
-            if (errorText.length > 0) { // Error Happened
-                console.log(errorText);
-            }
-            else {
+            if (response.ok) {
                 const elements = await (await AJAXGet("main-view.controller.php")).json();
                 loadNewHTML(elements);
+            }
+            else {
+                const errorMessage = await response.text();
+                const alertElement = document.getElementById('alert');
+                alertElement.textContent = errorMessage;
+                alertElement.classList.remove('d-none');
             }
         });
     }

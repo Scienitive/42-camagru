@@ -4,9 +4,11 @@
             <div class="card bg-dark text-white" style="border-radius: 1rem;">
                 <form id="login-form" class="card-body p-5 text-center">
                     <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
-                    <p class="text-white-50 mb-4">Please enter your login and password!</p>
+                    <p class="text-white-50 mb-3">Please enter your login and password!</p>
 
-                    <div class="form-outline form-white mb-1">
+                    <div id="alert" class="alert alert-danger mx-5 mb-4 d-none" role="alert"></div>
+
+                    <div class="form-outline form-white mb-1 mt-2">
                         <input type="email" id="email" name="email" class="form-control form-control-lg text-center" />
                     </div>
                     <label class="form-label mb-3" for="email">Email</label>

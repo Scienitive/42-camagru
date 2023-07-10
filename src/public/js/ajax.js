@@ -23,13 +23,7 @@ export const AJAXPost = async (link, jsonData, callback) => {
             credentials: 'same-origin',
             body: formData
         });
-    
-        if (response.ok) {
-            await callback(await response, formData);
-        }
-        else {
-          throw new Error('AJAX request failed.');
-        }
+        await callback(await response, formData);
     }
     catch (error) {
         console.error(error);
@@ -39,13 +33,7 @@ export const AJAXPost = async (link, jsonData, callback) => {
 export const AJAXGet = async (link) => {
     try {
         const response = await fetch("server/controllers/ajax/get/" + link);
-
-        if (response.ok) {
-            return response;
-        }
-        else {
-          throw new Error('AJAX request failed.');
-        }
+        return response;
     }
     catch (error) {
         console.error(error);
