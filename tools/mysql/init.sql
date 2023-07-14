@@ -2,5 +2,18 @@ CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) NOT NULL UNIQUE,
   username VARCHAR(128) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL
+  password VARCHAR(255) NOT NULL,
+  verification_token CHAR(36),
+  is_verified TINYINT(1) DEFAULT 0
 );
+
+DELIMITER //
+
+CREATE TRIGGER before_insert_users
+BEFORE INSERT ON users
+FOR EACH ROW
+BEGIN
+  SET NEW.verification_token = UUID();
+END//
+
+DELIMITER ;

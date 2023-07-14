@@ -43,3 +43,5 @@ services:
     restart: always
     volumes:
       - ../src:/var/www/html
+    environment:
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}

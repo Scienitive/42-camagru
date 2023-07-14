@@ -1,4 +1,7 @@
-<?php include("./models/session.php"); ?>
+<?php
+include(__DIR__ . "/models/session.php");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
