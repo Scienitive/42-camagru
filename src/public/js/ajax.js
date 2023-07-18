@@ -18,7 +18,7 @@ export const makeFormData = (jsonData) => {
 export const AJAXPost = async (link, jsonData, callback) => {
     const formData = makeFormData(jsonData);
     try {
-        const response = await fetch("server/controllers/post/" + link, {
+        const response = await fetch(`server/controllers/post/${link}`, {
             method: 'POST',
             credentials: 'same-origin',
             body: formData
@@ -30,10 +30,17 @@ export const AJAXPost = async (link, jsonData, callback) => {
     }
 }
 
-export const AJAXGet = async (link) => {
+export const AJAXGet = async (link, jsonData) => {
     try {
-        const response = await fetch("server/controllers/get/" + link);
-        return response;
+        if (jsonData === undefined) {
+            const response = await fetch(`server/controllers/get/${link}`);
+            return response;
+        }
+        else {
+            const queryParams = new URLSearchParams(jsonData);
+            const response = await fetch(`server/controllers/get/${link}?${queryParams}`);
+            return response;
+        }
     }
     catch (error) {
         console.error(error);

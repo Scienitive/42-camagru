@@ -16,6 +16,9 @@ else if ($_SESSION['main-view'] === "sign-up") {
 else if ($_SESSION['main-view'] === "email-verification") {
     include(__DIR__ . "/signup.verification.view.php");
 }
+else if ($_SESSION['main-view'] === "email-verify") {
+    include(__DIR__ . "/verify.view.php");
+}
 else if ($_SESSION['main-view'] === "404") {
     include(__DIR__ . "/404.view.php");
 }

@@ -1,5 +1,5 @@
 import { AJAXPost, AJAXGet } from "./ajax.js";
-import { loadNewHTML } from "./listen.js";
+import { afterPageLoad, loadNewHTML } from "./listen.js";
 
 document.addEventListener('click', (e) => {
     if (!e.target.matches("a")) {
@@ -29,6 +29,10 @@ const urlRoutes = {
     "/signup": {
         mainView: "sign-up",
         title: "Camagru | Signup"
+    },
+    "/verify": {
+        mainView: "email-verify",
+        title: "Camagru | Verify"
     }
 };
 
@@ -57,9 +61,17 @@ const urlLocationHandler = async (pathname) => {
         });
         const elements = await (await AJAXGet("current-elements.php")).json();
         loadNewHTML(elements);
+        afterPageLoad();
     });
     if (typeof(pathname) != "object") { // If it hasn't come from window.onpopstate
-        window.history.pushState({}, "", location);
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.size > 0) {
+            const queryString = urlParams.toString();
+            window.history.pushState({}, "", `${location}?${queryString}`);
+        }
+        else {
+            window.history.pushState({}, "", location);
+        }
     }
 };
 
