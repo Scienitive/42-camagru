@@ -53,6 +53,5 @@ catch (PDOException $e) {
     die("SQL Error: " . $e->getMessage());
 }
 
-$_SESSION['main-view'] = "email-verification";
 exit;
 ?>

@@ -18,7 +18,11 @@ try {
     if ($user) {
         if (!password_verify($_POST['password'], $user['password'])) {
             http_response_code(401); // 401 Unauthorized
-            die("Login not successfull");
+            die("Password is wrong.");
+        }
+        else if (!$user['is_verified']) {
+            http_response_code(401); // 401 Unauthorized
+            die("Please verify your email.");
         }
     }
     else {

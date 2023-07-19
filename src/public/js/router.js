@@ -1,5 +1,5 @@
-import { AJAXPost, AJAXGet } from "./ajax.js";
-import { afterPageLoad, loadNewHTML } from "./listen.js";
+import { AJAXGet, AJAXGetHTML } from "./ajax.js";
+import { afterPageLoad } from "./listen.js";
 
 document.addEventListener('click', (e) => {
     if (!e.target.matches("a")) {
@@ -11,28 +11,46 @@ document.addEventListener('click', (e) => {
 
 const urlRoutes = {
     "/403": {
-        mainView: "403",
-        title: "Camagru | 403"
+        name: "403",
+        title: "Camagru | 403",
+        headerLink: "",
+        mainLink: "403.html"
     },
     "/404": {
-        mainView: "404",
-        title: "Camagru | 404"
+        name: "404",
+        title: "Camagru | 404",
+        headerLink: "",
+        mainLink: "404.html"
     },
     "/": {
-        mainView: "home",
-        title: "Camagru"
+        name: "home",
+        title: "Camagru",
+        headerLink: "",
+        mainLink: ""
     },
     "/login": {
-        mainView: "login",
-        title: "Camagru | Login"
+        name: "login",
+        title: "Camagru | Login",
+        headerLink: "login.html",
+        mainLink: "login.html"
     },
     "/signup": {
-        mainView: "sign-up",
-        title: "Camagru | Signup"
+        name: "signup",
+        title: "Camagru | Signup",
+        headerLink: "signup.html",
+        mainLink: "signup.html"
+    },
+    "/verification-sent": {
+        name: "verification-sent",
+        title: "Camagru | Verify",
+        headerLink: "signup.html",
+        mainLink: "verification-sent.html"
     },
     "/verify": {
-        mainView: "email-verify",
-        title: "Camagru | Verify"
+        name: "verify",
+        title: "Camagru | Verify",
+        headerLink: "signup.html",
+        mainLink: "verify.html"
     }
 };
 
@@ -42,6 +60,7 @@ const urlRoute = (event) => {
     const url = new URL(absoluteURL);
     const relativePath = url.pathname.length > 0 ? url.pathname : "/";
     urlLocationHandler(relativePath);
+    
 };
 
 const urlLocationHandler = async (pathname) => {
@@ -52,28 +71,34 @@ const urlLocationHandler = async (pathname) => {
     else {
         location = window.location.pathname;
     }
-
     let route = urlRoutes[location] || urlRoutes["/404"];
-    await AJAXPost("route.controller.php", { data: route.mainView }, async (response, formData) => {
-        const newMainView = await response.text();
-        location = Object.keys(urlRoutes).find(key => {
-            return Object.values(urlRoutes[key]).some(val => val.includes(newMainView));
-        });
-        const elements = await (await AJAXGet("current-elements.php")).json();
-        loadNewHTML(elements);
-        afterPageLoad();
+    route = await changeRoute(route);
+    location = Object.keys(urlRoutes).find(key => {
+        return Object.values(urlRoutes[key]).some(val => val.includes(route.name));
     });
+    const headerElement = await (await AJAXGetHTML(`headers/${route.headerLink}`)).text();
+    const mainElement = await (await AJAXGetHTML(`mains/${route.mainLink}`)).text();
+    document.getElementById('header-section').innerHTML = headerElement;
+    document.getElementById('main-section').innerHTML = mainElement;
+    afterPageLoad();
+
     if (typeof(pathname) != "object") { // If it hasn't come from window.onpopstate
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.size > 0) {
-            const queryString = urlParams.toString();
-            window.history.pushState({}, "", `${location}?${queryString}`);
-        }
-        else {
-            window.history.pushState({}, "", location);
-        }
+        window.history.pushState({}, "", location);
     }
-};
+}
+
+const changeRoute = async (route) => {
+    const session = await (await AJAXGet("current-session.php")).json();
+
+    if (route.name === "home" || route.name === "login") {
+        route = session.hasOwnProperty('user-id') ? urlRoutes["/"] : urlRoutes["/login"];
+    }
+    else if (route.name === "signup") {
+        route = session.hasOwnProperty('user-id') ? urlRoutes["/"] : urlRoutes["/signup"];
+    }
+
+    return route;
+}
 
 window.onpopstate = urlLocationHandler;
 window.route = urlRoute;

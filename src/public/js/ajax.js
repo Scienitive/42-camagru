@@ -46,3 +46,13 @@ export const AJAXGet = async (link, jsonData) => {
         console.error(error);
     }
 }
+
+export const AJAXGetHTML = async (link) => {
+    try {
+        const response = await fetch(`public/html/${link}`);
+        return response;
+    }
+    catch (error) {
+        console.error(error);
+    }
+}

@@ -20,13 +20,10 @@ include(__DIR__ . "/models/session.php");
     </head>
     <body>
         <div class="vh-100 d-flex flex-column">
-            <div id="header-section">
-                <?php include('./views/headers/header.php'); ?>
-            </div>
-            <div id="main-section" class="d-flex flex-grow-1 align-items-center">
-                <?php include('./views/mains/main.php'); ?>
-            </div>
+            <div id="header-section"></div>
+            <div id="main-section" class="d-flex flex-grow-1 align-items-center"></div>
         </div>
         <script src="../public/js/router.js" type="module"></script>
+        <script src="../public/js/listen.js" type="module"></script>
     </body>
 </html>
