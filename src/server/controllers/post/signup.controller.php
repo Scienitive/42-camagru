@@ -1,5 +1,4 @@
 <?php
-include(__DIR__ . "/../../models/session.php");
 
 if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) || empty($_POST['uname']) || empty($_POST['password'])) {
     http_response_code(400); // 400 Bad Request

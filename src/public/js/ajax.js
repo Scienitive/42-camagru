@@ -1,7 +1,3 @@
-export const getCurrentMainView = async () => {
-    return await (await AJAXGet("current-session.php")).text();
-}
-
 export const makeFormData = (jsonData) => {
     if (jsonData instanceof FormData) {
         return jsonData;

@@ -11,46 +11,58 @@ document.addEventListener('click', (e) => {
 
 const urlRoutes = {
     "/403": {
-        name: "403",
+        name: "/403",
         title: "Camagru | 403",
         headerLink: "",
         mainLink: "403.html"
     },
     "/404": {
-        name: "404",
+        name: "/404",
         title: "Camagru | 404",
         headerLink: "",
         mainLink: "404.html"
     },
     "/": {
-        name: "home",
+        name: "/",
         title: "Camagru",
         headerLink: "",
         mainLink: ""
     },
     "/login": {
-        name: "login",
+        name: "/login",
         title: "Camagru | Login",
         headerLink: "login.html",
         mainLink: "login.html"
     },
     "/signup": {
-        name: "signup",
+        name: "/signup",
         title: "Camagru | Signup",
         headerLink: "signup.html",
         mainLink: "signup.html"
     },
     "/verification-sent": {
-        name: "verification-sent",
+        name: "/verification-sent",
         title: "Camagru | Verify",
         headerLink: "signup.html",
         mainLink: "verification-sent.html"
     },
     "/verify": {
-        name: "verify",
+        name: "/verify",
         title: "Camagru | Verify",
         headerLink: "signup.html",
         mainLink: "verify.html"
+    },
+    "/password-change-send": {
+        name: "/password-change-send",
+        title: "Camagru | Password Change",
+        headerLink: "signup.html",
+        mainLink: "password-change-1.html"
+    },
+    "/password-change": {
+        name: "/password-change",
+        title: "Camagru | Password Change",
+        headerLink: "signup.html",
+        mainLink: "password-change-2.html"
     }
 };
 
@@ -73,9 +85,7 @@ const urlLocationHandler = async (pathname) => {
     }
     let route = urlRoutes[location] || urlRoutes["/404"];
     route = await changeRoute(route);
-    location = Object.keys(urlRoutes).find(key => {
-        return Object.values(urlRoutes[key]).some(val => val.includes(route.name));
-    });
+    location = route.name;
     const headerElement = await (await AJAXGetHTML(`headers/${route.headerLink}`)).text();
     const mainElement = await (await AJAXGetHTML(`mains/${route.mainLink}`)).text();
     document.getElementById('header-section').innerHTML = headerElement;
@@ -83,17 +93,24 @@ const urlLocationHandler = async (pathname) => {
     afterPageLoad();
 
     if (typeof(pathname) != "object") { // If it hasn't come from window.onpopstate
-        window.history.pushState({}, "", location);
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.size > 0 && pathname === undefined) { // pathname === undefined means if it's directly applied from address bar
+            const queryString = urlParams.toString();
+            window.history.pushState({}, "", `${location}?${queryString}`);
+        }
+        else {
+            window.history.pushState({}, "", location);
+        }
     }
 }
 
 const changeRoute = async (route) => {
     const session = await (await AJAXGet("current-session.php")).json();
 
-    if (route.name === "home" || route.name === "login") {
+    if (route.name === "/" || route.name === "/login") {
         route = session.hasOwnProperty('user-id') ? urlRoutes["/"] : urlRoutes["/login"];
     }
-    else if (route.name === "signup") {
+    else if (route.name === "/signup") {
         route = session.hasOwnProperty('user-id') ? urlRoutes["/"] : urlRoutes["/signup"];
     }
 

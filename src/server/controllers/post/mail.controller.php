@@ -39,7 +39,9 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 $result = curl_exec($ch);
+var_dump($result);
 if (curl_errno($ch)) {
+    http_response_code(500); // 500 Internal Server Error
     echo 'Error:' . curl_error($ch);
 }
 curl_close ($ch);

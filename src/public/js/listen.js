@@ -1,4 +1,4 @@
-import { AJAXPost } from "./ajax.js";
+import { AJAXGet, AJAXPost } from "./ajax.js";
 
 // Event Listener For Buttons
 document.addEventListener('click', (e) => {
@@ -16,26 +16,45 @@ document.addEventListener('submit', async (e) => {
 
     const formData = new FormData(e.target);
     if (e.target.id === "signup-form") {
+        // CLIENT-SIDE CONTROLS
+        const alertElement = document.getElementById('alert');
+        const usernameRegex = /[^a-zA-Z0-9-_]/;
+        const username = formData.get('uname');
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/;
+        const password = formData.get('password');
+        let errorMessage = "";
+        if (usernameRegex.test(username)) {errorMessage = "Username must not include special characters other than (_) and (-).";}
+        else if (username.length < 4) {errorMessage = "Username must be at least 4 characters.";}
+        else if (username.length > 20) {errorMessage = "Username must not exceed 20 characters.";}
+        else if (!passwordRegex.test(password)) {errorMessage = "Password must include at least one uppercase, one lowecase and one number character.";}
+        else if (password.length < 6) {errorMessage = "Password must be at least 6 characters.";}
+        else if (password.length > 32) {errorMessage = "Username must not exceed 32 characters.";}
+
+        if (errorMessage !== "") {
+            alertElement.textContent = errorMessage;
+            alertElement.classList.remove('d-none');
+            return;
+        }
+
+        // HTTP REQUEST
         await AJAXPost("signup.controller.php", formData, async (response, formData) => {
             if (response.ok) {
                 const user = await response.json();
-                const mailSubject = "Camagru - Email Verification Link";
-                const mailContent = `http://localhost/verify?token=${user.verification_token}`;
+                const mailSubject = "Camagru - Email Verification";
+                const mailContent = `Hi ${user.username},\n\nWelcome to Camagru!\n\nPlease click the link below to verify your account.\n\nhttp://localhost/verify?token=${user.verification_token}\n\nThanks,\n- Camagru`;
                 await AJAXPost("mail.controller.php", { email: formData.get('email'), subject: mailSubject, content: mailContent }, async (response) => {
                     if (response.ok) {
                         window.location.replace("/verification-sent");
                     }
                     else {
-                        const errorMessage = await response.text();
-                        const alertElement = document.getElementById('alert');
+                        errorMessage = await response.text();
                         alertElement.textContent = errorMessage;
                         alertElement.classList.remove('d-none');
                     }
                 });
             }
             else {
-                const errorMessage = await response.text();
-                const alertElement = document.getElementById('alert');
+                errorMessage = await response.text();
                 alertElement.textContent = errorMessage;
                 alertElement.classList.remove('d-none');
             }
@@ -49,6 +68,72 @@ document.addEventListener('submit', async (e) => {
             else {
                 const errorMessage = await response.text();
                 const alertElement = document.getElementById('alert');
+                alertElement.textContent = errorMessage;
+                alertElement.classList.remove('d-none');
+            }
+        });
+    }
+    else if (e.target.id === "password-change-form-1") {
+        const response = await AJAXGet("user.controller.php", { email: formData.get('email') });
+        if (response.ok) {
+            const user = await response.json();
+            const mailSubject = "Camagru - Password Change";
+            const mailContent = `Hi ${user.username},\n\nPlease click the link below to change your password.\n\nhttp://localhost/password-change?token=${user.verification_token}\n\nThanks,\n- Camagru`;
+            await AJAXPost("mail.controller.php", { email: formData.get('email'), subject: mailSubject, content: mailContent }, async (response) => {
+                if (response.ok) {
+                    const button = document.getElementById('submit-button');
+                    button.disabled = true;
+                    const alertElement = document.getElementById('alert');
+                    alertElement.classList.remove('d-none', 'alert-danger');
+                    alertElement.classList.add('alert-success');
+                    alertElement.textContent = "Email has been sent successfully.";
+                }
+                else {
+                    const errorMessage = await response.text();
+                    const alertElement = document.getElementById('alert');
+                    alertElement.textContent = errorMessage;
+                    alertElement.classList.remove('d-none');
+                }
+            });
+        }
+        else {
+            const errorMessage = await response.text();
+            const alertElement = document.getElementById('alert');
+            alertElement.textContent = errorMessage;
+            alertElement.classList.remove('d-none');
+        }
+
+    }
+    else if (e.target.id === "password-change-form-2") {
+        // CLIENT-SIDE CONTROLS
+        const alertElement = document.getElementById('alert');
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/;
+        const password = formData.get('password');
+        let errorMessage = "";
+        if (!passwordRegex.test(password)) {errorMessage = "Password must include at least one uppercase, one lowecase and one number character.";}
+        else if (password.length < 6) {errorMessage = "Password must be at least 6 characters.";}
+        else if (password.length > 32) {errorMessage = "Username must not exceed 32 characters.";}
+
+        if (errorMessage !== "") {
+            alertElement.textContent = errorMessage;
+            alertElement.classList.remove('d-none');
+            return;
+        }
+
+        // HTTP REQUEST
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        await AJAXPost("password-change.controller.php", { password: formData.get('password'), verification_token: token }, async (response, formData) => {
+            if (response.ok) {
+                const button = document.getElementById('submit-button');
+                button.disabled = true;
+                const alertElement = document.getElementById('alert');
+                alertElement.classList.remove('d-none', 'alert-danger');
+                alertElement.classList.add('alert-success');
+                alertElement.textContent = "Your password has been changed successfully.";
+            }
+            else {
+                errorMessage = await response.text();
                 alertElement.textContent = errorMessage;
                 alertElement.classList.remove('d-none');
             }
