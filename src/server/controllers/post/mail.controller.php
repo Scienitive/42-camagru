@@ -38,12 +38,19 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 ));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-$result = curl_exec($ch);
-var_dump($result);
+$response = curl_exec($ch);
+
 if (curl_errno($ch)) {
     http_response_code(500); // 500 Internal Server Error
     echo 'Error:' . curl_error($ch);
 }
+
+$httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+http_response_code($httpStatusCode);
+if ($httpStatusCode >= 400) {
+    echo "Server can't send mails right now.";
+}
+
 curl_close ($ch);
 exit;
 ?>

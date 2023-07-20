@@ -26,7 +26,7 @@ export const AJAXPost = async (link, jsonData, callback) => {
     }
 }
 
-export const AJAXGet = async (link, jsonData) => {
+export const AJAXGet = async (link, jsonData, callback) => {
     try {
         if (jsonData === undefined) {
             const response = await fetch(`server/controllers/get/${link}`);
@@ -47,6 +47,29 @@ export const AJAXGetHTML = async (link) => {
     try {
         const response = await fetch(`public/html/${link}`);
         return response;
+    }
+    catch (error) {
+        console.error(error);
+    }
+}
+
+export const AJAXDelete = async (link, jsonData) => {
+    try {
+        if (jsonData === undefined) {
+            const response = await fetch(`server/controllers/delete/${link}`, {
+                method: 'DELETE',
+                credentials: 'same-origin',
+            });
+            return response;
+        }
+        else {
+            const queryParams = new URLSearchParams(jsonData);
+            const response = await fetch(`server/controllers/delete/${link}?${queryParams}`, {
+                method: 'DELETE',
+                credentials: 'same-origin',
+            });
+            return response;
+        }
     }
     catch (error) {
         console.error(error);

@@ -1,4 +1,5 @@
-import { AJAXGet, AJAXPost } from "./ajax.js";
+import { AJAXDelete, AJAXGet, AJAXPost } from "./ajax.js";
+import { hash } from "./utility.js";
 
 // Event Listener For Buttons
 document.addEventListener('click', (e) => {
@@ -37,7 +38,10 @@ document.addEventListener('submit', async (e) => {
         }
 
         // HTTP REQUEST
-        await AJAXPost("signup.controller.php", formData, async (response, formData) => {
+        const randomValue = Math.floor(Math.random() * 1000000);
+        const token = await hash(username + formData.get('email') + randomValue.toString());
+        formData.append('token', token);
+        await AJAXPost("signup.controller.php", formData, async (response) => {
             if (response.ok) {
                 const user = await response.json();
                 const mailSubject = "Camagru - Email Verification";
@@ -47,6 +51,7 @@ document.addEventListener('submit', async (e) => {
                         window.location.replace("/verification-sent");
                     }
                     else {
+                        await AJAXDelete("user.controller.php", { email: formData.get('email') });
                         errorMessage = await response.text();
                         alertElement.textContent = errorMessage;
                         alertElement.classList.remove('d-none');
@@ -123,7 +128,7 @@ document.addEventListener('submit', async (e) => {
         // HTTP REQUEST
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
-        await AJAXPost("password-change.controller.php", { password: formData.get('password'), verification_token: token }, async (response, formData) => {
+        await AJAXPost("password-change.controller.php", { password: formData.get('password'), token: token }, async (response, formData) => {
             if (response.ok) {
                 const button = document.getElementById('submit-button');
                 button.disabled = true;

@@ -9,11 +9,11 @@ $hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
 $pdo = require(__DIR__ . "/../../models/database.php");
 
-$sql = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
+$sql = "INSERT INTO users (email, username, password, verification_token) VALUES (?, ?, ?, ?)";
 
 try {
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$_POST['email'], $_POST['uname'], $hashed_password]);
+    $stmt->execute([$_POST['email'], $_POST['uname'], $hashed_password, $_POST['token']]);
     http_response_code(201); // 201 Created
 }
 catch (PDOException $e) {
