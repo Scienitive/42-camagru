@@ -13,3 +13,41 @@ body {
   background-size: cover;
   background-repeat: repeat;
 }
+
+/* These 2 needs to match each other */
+.fixed-row { 
+  height: 512px;
+}
+.fixed-height-image {
+  height: 512px;
+}
+
+.bg-darker {
+  background-color: #181C1F;
+}
+
+input.transparent-input { 
+  border:none !important
+}
+
+.transparent-input {
+  background-color: rgba(0, 0, 0, 0);
+  border:none;
+}
+
+input.transparent-input {
+  background-color:rgba(0,0,0,0) !important;
+  border:none !important;
+}
+
+input[type="comment"]:focus {
+  border-color: none;
+  box-shadow: none;
+  outline: none;
+}
+
+#button-send:focus {
+  border-color: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
