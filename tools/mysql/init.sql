@@ -6,3 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
   verification_token VARCHAR(255) NOT NULL UNIQUE,
   is_verified TINYINT(1) DEFAULT 0
 );
+
+-- Insert the default user -- pass:Asd123
+INSERT INTO users (email, username, password, verification_token, is_verified)
+VALUES ('scienitive77@gmail.com', 'Scienitive', '$2y$10$bWalLkPJOSlmHgYZxzL.guH3hrg0LRVRvUokm3rF9i2ubSz6RLBdS', 'verification_token_here', 1);
