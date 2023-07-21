@@ -1,11 +1,12 @@
 import { AJAXDelete, AJAXGet, AJAXPost } from "./ajax.js";
-import { hash } from "./utility.js";
+import { buttonLoadingOff, buttonLoadingOn, hash } from "./utility.js";
 
 // Event Listener For Buttons
 document.addEventListener('click', (e) => {
     if (!e.target.matches("button")) {
         return;
     }
+    //buttonLoadingOn(e.target);
 });
 
 // Event Listener For Forms
@@ -13,9 +14,12 @@ document.addEventListener('submit', async (e) => {
     if (!e.target.matches("form")) {
         return;
     }
-    e.preventDefault();
 
+    e.preventDefault();
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    buttonLoadingOn(submitButton);
     const formData = new FormData(e.target);
+
     if (e.target.id === "signup-form") {
         // CLIENT-SIDE CONTROLS
         const alertElement = document.getElementById('alert');
@@ -34,6 +38,7 @@ document.addEventListener('submit', async (e) => {
         if (errorMessage !== "") {
             alertElement.textContent = errorMessage;
             alertElement.classList.remove('d-none');
+            buttonLoadingOff(submitButton);
             return;
         }
 
@@ -55,6 +60,7 @@ document.addEventListener('submit', async (e) => {
                         errorMessage = await response.text();
                         alertElement.textContent = errorMessage;
                         alertElement.classList.remove('d-none');
+                        buttonLoadingOff(submitButton);
                     }
                 });
             }
@@ -62,6 +68,7 @@ document.addEventListener('submit', async (e) => {
                 errorMessage = await response.text();
                 alertElement.textContent = errorMessage;
                 alertElement.classList.remove('d-none');
+                buttonLoadingOff(submitButton);
             }
         });
     }
@@ -75,6 +82,7 @@ document.addEventListener('submit', async (e) => {
                 const alertElement = document.getElementById('alert');
                 alertElement.textContent = errorMessage;
                 alertElement.classList.remove('d-none');
+                buttonLoadingOff(submitButton);
             }
         });
     }
@@ -86,18 +94,18 @@ document.addEventListener('submit', async (e) => {
             const mailContent = `Hi ${user.username},\n\nPlease click the link below to change your password.\n\nhttp://localhost/password-change?token=${user.verification_token}\n\nThanks,\n- Camagru`;
             await AJAXPost("mail.controller.php", { email: formData.get('email'), subject: mailSubject, content: mailContent }, async (response) => {
                 if (response.ok) {
-                    const button = document.getElementById('submit-button');
-                    button.disabled = true;
                     const alertElement = document.getElementById('alert');
                     alertElement.classList.remove('d-none', 'alert-danger');
                     alertElement.classList.add('alert-success');
                     alertElement.textContent = "Email has been sent successfully.";
+                    buttonLoadingOff(submitButton, false);
                 }
                 else {
                     const errorMessage = await response.text();
                     const alertElement = document.getElementById('alert');
                     alertElement.textContent = errorMessage;
                     alertElement.classList.remove('d-none');
+                    buttonLoadingOff(submitButton);
                 }
             });
         }
@@ -106,6 +114,7 @@ document.addEventListener('submit', async (e) => {
             const alertElement = document.getElementById('alert');
             alertElement.textContent = errorMessage;
             alertElement.classList.remove('d-none');
+            buttonLoadingOff(submitButton);
         }
 
     }
@@ -122,6 +131,7 @@ document.addEventListener('submit', async (e) => {
         if (errorMessage !== "") {
             alertElement.textContent = errorMessage;
             alertElement.classList.remove('d-none');
+            buttonLoadingOff(submitButton);
             return;
         }
 
@@ -130,17 +140,17 @@ document.addEventListener('submit', async (e) => {
         const token = urlParams.get('token');
         await AJAXPost("password-change.controller.php", { password: formData.get('password'), token: token }, async (response, formData) => {
             if (response.ok) {
-                const button = document.getElementById('submit-button');
-                button.disabled = true;
                 const alertElement = document.getElementById('alert');
                 alertElement.classList.remove('d-none', 'alert-danger');
                 alertElement.classList.add('alert-success');
                 alertElement.textContent = "Your password has been changed successfully.";
+                buttonLoadingOff(submitButton, false);
             }
             else {
                 errorMessage = await response.text();
                 alertElement.textContent = errorMessage;
                 alertElement.classList.remove('d-none');
+                buttonLoadingOff(submitButton);
             }
         });
     }
