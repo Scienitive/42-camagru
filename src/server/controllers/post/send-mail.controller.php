@@ -42,7 +42,7 @@ $response = curl_exec($ch);
 
 if (curl_errno($ch)) {
     http_response_code(500); // 500 Internal Server Error
-    echo 'Error:' . curl_error($ch);
+    echo "Server can't send mails right now.";
 }
 
 $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);

@@ -4,11 +4,11 @@ include(__DIR__ . "/../../models/session.php");
 $pdo = require(__DIR__ . "/../../models/database.php");
 
 $sql = "SELECT * FROM users
-        WHERE email = ?";
+        WHERE verification_token = ?";
 
 try {
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$_GET['email']]);
+    $stmt->execute([$_GET['token']]);
     $user = $stmt->fetch();
     if ($user) {
         header('Content-Type: application/json');
@@ -16,7 +16,7 @@ try {
     }
     else {
         http_response_code(404); // 404 Not Found
-        die("Email is not registered.");
+        die("Token is invalid.");
     }
 }
 catch (PDOException $e) {
