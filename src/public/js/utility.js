@@ -53,3 +53,9 @@ export const buttonLoadingOff = (button, removeDisabled = true) => {
         spinner.classList.add('d-none');
     }
 }
+
+export const convertStringToElement = (htmlString) => {
+    const parser = new DOMParser();
+    const parsedDocument = parser.parseFromString(htmlString, 'text/html');
+    return parsedDocument.body.firstChild;
+}

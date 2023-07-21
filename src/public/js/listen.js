@@ -1,4 +1,5 @@
 import { AJAXDelete, AJAXGet, AJAXPost } from "./ajax.js";
+import { loadPosts } from "./posts.js";
 import { buttonLoadingOff, buttonLoadingOn, createNewToken, createNewTokenFromOldToken } from "./utility.js";
 
 // Event Listener For Buttons
@@ -6,7 +7,6 @@ document.addEventListener('click', (e) => {
     if (!e.target.matches("button")) {
         return;
     }
-    //buttonLoadingOn(e.target);
 });
 
 // Event Listener For Forms
@@ -179,7 +179,21 @@ document.addEventListener('submit', async (e) => {
 
 // Event Listener For Page Loads
 export const afterPageLoad = async () => {
-    if (window.location.pathname === '/verify') {
+    // MAIN-SECTION SETTINGS
+    if (window.location.pathname === '/') {
+        const mainSection = document.getElementById('main-section');
+        mainSection.classList.remove('flex-grow-1', 'align-items-center');
+    }
+    else {
+        const mainSection = document.getElementById('main-section');
+        mainSection.classList.add('flex-grow-1', 'align-items-center');
+    }
+
+    if (window.location.pathname === '/') {
+        const container = document.getElementById('main-posts');
+        loadPosts(container);
+    }
+    else if (window.location.pathname === '/verify') {
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
         await AJAXPost("verify.controller.php", { token: token }, async (response) => {

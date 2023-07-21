@@ -9,7 +9,7 @@
 }
 
 body {
-  background-image: url("../uploads/body-background.jpg");
+  background-image: url("../media/body-background.jpg");
   background-size: cover;
   background-repeat: repeat;
 }
