@@ -11,67 +11,47 @@ export const makeFormData = (jsonData) => {
     return formData;
 }
 
-export const AJAXPost = async (link, jsonData, callback) => {
+export const AJAXPost = async (link, jsonData) => {
     const formData = makeFormData(jsonData);
-    try {
-        const response = await fetch(`server/controllers/post/${link}`, {
-            method: 'POST',
-            credentials: 'same-origin',
-            body: formData
-        });
-        await callback(await response, formData);
-    }
-    catch (error) {
-        console.error(error);
-    }
+    const response = await fetch(`server/controllers/post/${link}`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: formData
+    });
+    return response;
 }
 
 export const AJAXGet = async (link, jsonData, callback) => {
-    try {
-        if (jsonData === undefined) {
-            const response = await fetch(`server/controllers/get/${link}`);
-            return response;
-        }
-        else {
-            const queryParams = new URLSearchParams(jsonData);
-            const response = await fetch(`server/controllers/get/${link}?${queryParams}`);
-            return response;
-        }
+    if (jsonData === undefined) {
+        const response = await fetch(`server/controllers/get/${link}`);
+        return response;
     }
-    catch (error) {
-        console.error(error);
+    else {
+        const queryParams = new URLSearchParams(jsonData);
+        const response = await fetch(`server/controllers/get/${link}?${queryParams}`);
+        return response;
     }
 }
 
 export const AJAXGetHTML = async (link) => {
-    try {
-        const response = await fetch(`public/html/${link}`);
-        return response;
-    }
-    catch (error) {
-        console.error(error);
-    }
+    const response = await fetch(`public/html/${link}`);
+    return response;
 }
 
 export const AJAXDelete = async (link, jsonData) => {
-    try {
-        if (jsonData === undefined) {
-            const response = await fetch(`server/controllers/delete/${link}`, {
-                method: 'DELETE',
-                credentials: 'same-origin',
-            });
-            return response;
-        }
-        else {
-            const queryParams = new URLSearchParams(jsonData);
-            const response = await fetch(`server/controllers/delete/${link}?${queryParams}`, {
-                method: 'DELETE',
-                credentials: 'same-origin',
-            });
-            return response;
-        }
+    if (jsonData === undefined) {
+        const response = await fetch(`server/controllers/delete/${link}`, {
+            method: 'DELETE',
+            credentials: 'same-origin',
+        });
+        return response;
     }
-    catch (error) {
-        console.error(error);
+    else {
+        const queryParams = new URLSearchParams(jsonData);
+        const response = await fetch(`server/controllers/delete/${link}?${queryParams}`, {
+            method: 'DELETE',
+            credentials: 'same-origin',
+        });
+        return response;
     }
 }

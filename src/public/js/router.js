@@ -90,7 +90,7 @@ const urlLocationHandler = async (pathname) => {
     const mainElement = await (await AJAXGetHTML(`mains/${route.mainLink}`)).text();
     document.getElementById('header-section').innerHTML = headerElement;
     document.getElementById('main-section').innerHTML = mainElement;
-    afterPageLoad();
+    afterPageLoad(location);
 
     if (typeof(pathname) != "object") { // If it hasn't come from window.onpopstate
         const urlParams = new URLSearchParams(window.location.search);

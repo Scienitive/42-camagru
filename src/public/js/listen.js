@@ -45,50 +45,48 @@ document.addEventListener('submit', async (e) => {
         // HTTP REQUEST
         const token = await createNewToken(username + formData.get('email'), false);
         formData.append('token', token);
-        await AJAXPost("signup.controller.php", formData, async (response) => {
-            if (response.ok) {
-                const user = await response.json();
-                const mailSubject = "Camagru - Email Verification";
-                const mailContent = `Hi ${user.username},\n\nWelcome to Camagru!\n\nPlease click the link below to verify your account.\n\nhttp://localhost/verify?token=${user.verification_token}\n\nThanks,\n- Camagru`;
-                await AJAXPost("send-mail.controller.php", { email: formData.get('email'), subject: mailSubject, content: mailContent }, async (response) => {
-                    if (response.ok) {
-                        window.location.replace("/verification-sent");
-                    }
-                    else {
-                        await AJAXDelete("user.controller.php", { email: formData.get('email') });
-                        errorMessage = await response.text();
-                        alertElement.textContent = errorMessage;
-                        alertElement.classList.remove('d-none');
-                        buttonLoadingOff(submitButton);
-                    }
-                });
+
+        const signupResponse = await AJAXPost("signup.controller.php", formData);
+        if (signupResponse.ok) {
+            const user = await signupResponse.json();
+            const mailSubject = "Camagru - Email Verification";
+            const mailContent = `Hi ${user.username},\n\nWelcome to Camagru!\n\nPlease click the link below to verify your account.\n\nhttp://localhost/verify?token=${user.verification_token}\n\nThanks,\n- Camagru`;
+            const mailResponse = await AJAXPost("send-mail.controller.php", { email: formData.get('email'), subject: mailSubject, content: mailContent });
+            if (mailResponse.ok) {
+                window.location.replace("/verification-sent");
             }
             else {
-                errorMessage = await response.text();
+                await AJAXDelete("user.controller.php", { email: formData.get('email') });
+                errorMessage = await mailResponse.text();
                 alertElement.textContent = errorMessage;
                 alertElement.classList.remove('d-none');
                 buttonLoadingOff(submitButton);
             }
-        });
+        }
+        else {
+            errorMessage = await signupResponse.text();
+            alertElement.textContent = errorMessage;
+            alertElement.classList.remove('d-none');
+            buttonLoadingOff(submitButton);
+        }
     }
     else if (e.target.id === "login-form") {
-        await AJAXPost("login.controller.php", formData, async (response, formData) => {
-            if (response.ok) {
-                window.location.replace("/");
-            }
-            else {
-                const errorMessage = await response.text();
-                const alertElement = document.getElementById('alert');
-                alertElement.textContent = errorMessage;
-                alertElement.classList.remove('d-none');
-                buttonLoadingOff(submitButton);
-            }
-        });
+        const loginResponse = await AJAXPost("login.controller.php", formData)
+        if (loginResponse.ok) {
+            window.location.replace("/");
+        }
+        else {
+            const errorMessage = await loginResponse.text();
+            const alertElement = document.getElementById('alert');
+            alertElement.textContent = errorMessage;
+            alertElement.classList.remove('d-none');
+            buttonLoadingOff(submitButton);
+        }
     }
     else if (e.target.id === "password-change-form-1") {
-        const response = await AJAXGet("user.controller.php", { email: formData.get('email') });
-        if (response.ok) {
-            const user = await response.json();
+        const userResponse = await AJAXGet("user.controller.php", { email: formData.get('email') });
+        if (userResponse.ok) {
+            const user = await userResponse.json();
             if (!user.is_verified) {
                 const alertElement = document.getElementById('alert');
                 alertElement.textContent = "You need to verify your account to change your password.";
@@ -96,27 +94,27 @@ document.addEventListener('submit', async (e) => {
                 buttonLoadingOff(submitButton);
                 return;
             }
+
             const mailSubject = "Camagru - Password Change";
             const mailContent = `Hi ${user.username},\n\nPlease click the link below to change your password.\n\nhttp://localhost/password-change?token=${user.verification_token}\n\nThanks,\n- Camagru`;
-            await AJAXPost("send-mail.controller.php", { email: formData.get('email'), subject: mailSubject, content: mailContent }, async (response) => {
-                if (response.ok) {
-                    const alertElement = document.getElementById('alert');
-                    alertElement.classList.remove('d-none', 'alert-danger');
-                    alertElement.classList.add('alert-success');
-                    alertElement.textContent = "Email has been sent successfully.";
-                    buttonLoadingOff(submitButton, false);
-                }
-                else {
-                    const errorMessage = await response.text();
-                    const alertElement = document.getElementById('alert');
-                    alertElement.textContent = errorMessage;
-                    alertElement.classList.remove('d-none');
-                    buttonLoadingOff(submitButton);
-                }
-            });
+            const mailResponse = await AJAXPost("send-mail.controller.php", { email: formData.get('email'), subject: mailSubject, content: mailContent });
+            if (mailResponse.ok) {
+                const alertElement = document.getElementById('alert');
+                alertElement.classList.remove('d-none', 'alert-danger');
+                alertElement.classList.add('alert-success');
+                alertElement.textContent = "Email has been sent successfully.";
+                buttonLoadingOff(submitButton, false);
+            }
+            else {
+                const errorMessage = await mailResponse.text();
+                const alertElement = document.getElementById('alert');
+                alertElement.textContent = errorMessage;
+                alertElement.classList.remove('d-none');
+                buttonLoadingOff(submitButton);
+            }
         }
         else {
-            const errorMessage = await response.text();
+            const errorMessage = await userResponse.text();
             const alertElement = document.getElementById('alert');
             alertElement.textContent = errorMessage;
             alertElement.classList.remove('d-none');
@@ -158,29 +156,28 @@ document.addEventListener('submit', async (e) => {
             buttonLoadingOff(submitButton);
             return;
         }
-        await AJAXPost("password.controller.php", { password: formData.get('password'), token: token }, async (response, formData) => {
-            if (response.ok) {
-                const alertElement = document.getElementById('alert');
-                alertElement.classList.remove('d-none', 'alert-danger');
-                alertElement.classList.add('alert-success');
-                alertElement.textContent = "Your password has been changed successfully.";
-                await createNewTokenFromOldToken(token);
-                buttonLoadingOff(submitButton, false);
-            }
-            else {
-                errorMessage = await response.text();
-                alertElement.textContent = errorMessage;
-                alertElement.classList.remove('d-none');
-                buttonLoadingOff(submitButton);
-            }
-        });
+        const passwordResponse = await AJAXPost("password.controller.php", { password: formData.get('password'), token: token });
+        if (passwordResponse.ok) {
+            const alertElement = document.getElementById('alert');
+            alertElement.classList.remove('d-none', 'alert-danger');
+            alertElement.classList.add('alert-success');
+            alertElement.textContent = "Your password has been changed successfully.";
+            await createNewTokenFromOldToken(token);
+            buttonLoadingOff(submitButton, false);
+        }
+        else {
+            errorMessage = await passwordResponse.text();
+            alertElement.textContent = errorMessage;
+            alertElement.classList.remove('d-none');
+            buttonLoadingOff(submitButton);
+        }
     }
 })
 
 // Event Listener For Page Loads
-export const afterPageLoad = async () => {
+export const afterPageLoad = async (location) => {
     // MAIN-SECTION SETTINGS
-    if (window.location.pathname === '/') {
+    if (location === '/') {
         const mainSection = document.getElementById('main-section');
         mainSection.classList.remove('flex-grow-1', 'align-items-center');
     }
@@ -189,36 +186,35 @@ export const afterPageLoad = async () => {
         mainSection.classList.add('flex-grow-1', 'align-items-center');
     }
 
-    if (window.location.pathname === '/') {
+    if (location === '/') {
         const container = document.getElementById('main-posts');
         loadPosts(container);
     }
-    else if (window.location.pathname === '/verify') {
+    else if (location === '/verify') {
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
-        await AJAXPost("verify.controller.php", { token: token }, async (response) => {
-            const header = document.getElementById('verify-header');
-            const content = document.getElementById('verify-content');
-            if (response.ok) {
-                header.textContent = "Verification Successful!";
-                content.textContent = "You are ready to go.";
+        const verifyResponse = await AJAXPost("verify.controller.php", { token: token });
+        const header = document.getElementById('verify-header');
+        const content = document.getElementById('verify-content');
+        if (verifyResponse.ok) {
+            header.textContent = "Verification Successful!";
+            content.textContent = "You are ready to go.";
+        }
+        else {
+            if (verifyResponse.status === 404) {
+                header.textContent = "Verification Unsuccessful!";
+                content.textContent = "Verification token is invalid.";
+            }
+            else if (verifyResponse.status === 400) {
+                header.textContent = "Verification Unsuccessful!";
+                content.textContent = "You are already verified.";
             }
             else {
-                if (response.status === 404) {
-                    header.textContent = "Verification Unsuccessful!";
-                    content.textContent = "Verification token is invalid.";
-                }
-                else if (response.status === 400) {
-                    header.textContent = "Verification Unsuccessful!";
-                    content.textContent = "You are already verified.";
-                }
-                else {
-                    const errorMessage = await response.text();
-                    header.textContent = "Error!";
-                    content.textContent = errorMessage;
-                }
+                const errorMessage = await verifyResponse.text();
+                header.textContent = "Error!";
+                content.textContent = errorMessage;
             }
-        });
+        }
         await createNewTokenFromOldToken(token);
     }
 }
