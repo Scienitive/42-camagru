@@ -192,6 +192,16 @@ document.addEventListener('submit', async (e) => {
     }
 })
 
+// Scroll Event Listener
+document.addEventListener('scroll', async () => {
+    if (window.location.pathname === '/') {
+        if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
+            const container = document.getElementById('main-posts');
+            await loadPosts(container);
+        }
+    }
+});
+
 // Event Listener For Page Loads
 export const afterPageLoad = async (location) => {
     // MAIN-SECTION SETTINGS
@@ -206,7 +216,7 @@ export const afterPageLoad = async (location) => {
 
     if (location === '/') {
         const container = document.getElementById('main-posts');
-        loadPosts(container);
+        await loadPosts(container);
     }
     else if (location === '/verify') {
         const urlParams = new URLSearchParams(window.location.search);

@@ -1,22 +1,30 @@
 <?php
 include(__DIR__ . "/../../models/session.php");
 
-if (!isset($_GET['lastPostId'])) {
-    http_response_code(400); // 400 Bad Request
-    exit;
-}
-
 $pdo = require(__DIR__ . "/../../models/database.php");
 
-$sql = "SELECT posts.*, users.username FROM posts
+if (isset($_GET['lastPostId'])) {
+    $sql = "SELECT posts.*, users.username FROM posts
         JOIN users ON posts.user_id = users.id
-        WHERE posts.id > ?
+        WHERE posts.id < ?
         ORDER BY posts.id DESC
         LIMIT 3";
+}
+else {
+    $sql = "SELECT posts.*, users.username FROM posts
+        JOIN users ON posts.user_id = users.id
+        ORDER BY posts.id DESC
+        LIMIT 3";
+}
 
 try {
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$_GET['lastPostId']]);
+    if (isset($_GET['lastPostId'])) {
+        $stmt->execute([$_GET['lastPostId']]);
+    }
+    else {
+        $stmt->execute();
+    }
     $result = $stmt->fetchAll();
     header('Content-Type: application/json');
     echo json_encode($result);

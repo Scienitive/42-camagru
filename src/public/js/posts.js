@@ -1,10 +1,21 @@
 import { AJAXGet, AJAXGetHTML } from "./ajax.js"
 import { convertStringToElement } from "./utility.js";
 
-export const loadPosts = async (container, lastPostId = 0) => {
-    const postElement = convertStringToElement(await (await AJAXGetHTML(`mains/post.html`)).text());
-    const posts = Object.values(await (await AJAXGet("post.controller.php", { lastPostId: lastPostId })).json());
+let lastPostId = null;
 
+export const loadPosts = async (container) => {
+    let posts;
+    if (lastPostId != null) {
+        posts = Object.values(await (await AJAXGet("post.controller.php", { lastPostId: lastPostId })).json());
+    }
+    else {
+        posts = Object.values(await (await AJAXGet("post.controller.php")).json());
+    }
+
+    if (posts.length <= 0) {return;}
+    lastPostId = posts[posts.length - 1].id;
+    const postElement = convertStringToElement(await (await AJAXGetHTML(`mains/post.html`)).text());
+    
     posts.forEach((post) => {
         const newElement = postElement.cloneNode(true);
 

@@ -21,7 +21,7 @@ export const AJAXPost = async (link, jsonData) => {
     return response;
 }
 
-export const AJAXGet = async (link, jsonData, callback) => {
+export const AJAXGet = async (link, jsonData) => {
     if (jsonData === undefined) {
         const response = await fetch(`server/controllers/get/${link}`);
         return response;
