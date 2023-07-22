@@ -22,7 +22,7 @@ export const createNewToken = async (username, email, applyToDatabase = true) =>
 }
 
 export const createNewTokenFromOldToken = async (token, applyToDatabase = true) => {
-    const response = await AJAXGet("token-user.controller.php", { token: token });
+    const response = await AJAXGet("user.controller.php", { token: token });
     if (response.ok) {
         const user = await response.json();
         return (await createNewToken(user.username, user.email, applyToDatabase));

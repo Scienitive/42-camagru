@@ -3,26 +3,34 @@ import { loadPosts } from "./posts.js";
 import { buttonLoadingOff, buttonLoadingOn, createNewToken, createNewTokenFromOldToken } from "./utility.js";
 
 // Event Listener For Buttons
-document.addEventListener('click', (e) => {
+document.addEventListener('click', async (e) => {
     if (!e.target.matches("button")) {
         return;
     }
 
     if (e.target.id === "like-post") {
+        const postId = e.target.getAttribute('post-id');
         const icon = e.target.querySelector('i');
-        const likeCountElement = document.getElementById('like-count');
+        const likeCountElement = document.querySelector(`[post-id="${postId}"]#like-count`);
+        const session = await (await AJAXGet("current-session.php")).json();
 
         if (icon.classList.contains('fa-regular')) { // Like
-            icon.classList.remove('fa-regular');
-            icon.classList.add('fa-solid');
-            icon.style.color = '#dc3545';
-            likeCountElement.textContent = (parseInt(likeCountElement.textContent) + 1).toString();
+            const likeResponse = await AJAXPost("like.controller.php", { userId: session['user-id'], postId: postId });
+            if (likeResponse.ok) {
+                icon.classList.remove('fa-regular');
+                icon.classList.add('fa-solid');
+                icon.style.color = '#dc3545';
+                likeCountElement.textContent = (parseInt(likeCountElement.textContent) + 1).toString();
+            }
         }
         else { // Remove Like
-            icon.classList.remove('fa-solid');
-            icon.classList.add('fa-regular');
-            icon.style.color = '#ffffff';
-            likeCountElement.textContent = (parseInt(likeCountElement.textContent) - 1).toString();
+            const likeResponse = await AJAXDelete("like.controller.php", { userId: session['user-id'], postId: postId });
+            if (likeResponse.ok) {
+                icon.classList.remove('fa-solid');
+                icon.classList.add('fa-regular');
+                icon.style.color = '#ffffff';
+                likeCountElement.textContent = (parseInt(likeCountElement.textContent) - 1).toString();
+            }
         }
     }
 });
@@ -160,7 +168,7 @@ document.addEventListener('submit', async (e) => {
         // HTTP REQUEST
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
-        const userResponse = await AJAXGet("token-user.controller.php", { token: token });
+        const userResponse = await AJAXGet("user.controller.php", { token: token });
         if (!userResponse.ok) {
             alertElement.textContent = "Verification token is invalid.";
             alertElement.classList.remove('d-none');

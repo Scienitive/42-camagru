@@ -3,12 +3,29 @@ include(__DIR__ . "/../../models/session.php");
 
 $pdo = require(__DIR__ . "/../../models/database.php");
 
-$sql = "SELECT * FROM users
-        WHERE email = ?";
+if (isset($_GET['id'])) {
+    $sql = "SELECT * FROM users
+            WHERE id = ?";
+    $var = $_GET['id'];
+}
+else if (isset($_GET['email'])) {
+    $sql = "SELECT * FROM users
+            WHERE email = ?";
+    $var = $_GET['email'];
+}
+else if (isset($_GET['token'])) {
+    $sql = "SELECT * FROM users
+            WHERE verification_token = ?";
+    $var = $_GET['token'];
+}
+else {
+    http_response_code(400); // 400 Bad Request
+    exit;
+}
 
 try {
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$_GET['email']]);
+    $stmt->execute([$var]);
     $user = $stmt->fetch();
     if ($user) {
         header('Content-Type: application/json');
@@ -16,7 +33,7 @@ try {
     }
     else {
         http_response_code(404); // 404 Not Found
-        die("Email is not registered.");
+        die("User not found.");
     }
 }
 catch (PDOException $e) {

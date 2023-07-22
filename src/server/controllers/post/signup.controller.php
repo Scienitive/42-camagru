@@ -9,7 +9,8 @@ $hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
 $pdo = require(__DIR__ . "/../../models/database.php");
 
-$sql = "INSERT INTO users (email, username, password, verification_token) VALUES (?, ?, ?, ?)";
+$sql = "INSERT INTO users (email, username, password, verification_token)
+        VALUES (?, ?, ?, ?)";
 
 try {
     $stmt = $pdo->prepare($sql);
