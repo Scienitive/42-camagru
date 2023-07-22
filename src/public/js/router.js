@@ -25,7 +25,7 @@ const urlRoutes = {
     "/": {
         name: "/",
         title: "Camagru",
-        headerLink: "",
+        headerLink: "signup.html",
         mainLink: "home.html"
     },
     "/login": {

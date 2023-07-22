@@ -7,6 +7,24 @@ document.addEventListener('click', (e) => {
     if (!e.target.matches("button")) {
         return;
     }
+
+    if (e.target.id === "like-post") {
+        const icon = e.target.querySelector('i');
+        const likeCountElement = document.getElementById('like-count');
+
+        if (icon.classList.contains('fa-regular')) { // Like
+            icon.classList.remove('fa-regular');
+            icon.classList.add('fa-solid');
+            icon.style.color = '#dc3545';
+            likeCountElement.textContent = (parseInt(likeCountElement.textContent) + 1).toString();
+        }
+        else { // Remove Like
+            icon.classList.remove('fa-solid');
+            icon.classList.add('fa-regular');
+            icon.style.color = '#ffffff';
+            likeCountElement.textContent = (parseInt(likeCountElement.textContent) - 1).toString();
+        }
+    }
 });
 
 // Event Listener For Forms

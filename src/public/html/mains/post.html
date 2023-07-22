@@ -1,4 +1,4 @@
-<div class="row justify-content-center">
+<div class="row justify-content-center mt-4">
     <div class="col-10 col-md-8 col-lg-6 col-xl-5">
         <div class="container card bg-dark text-white" style="border-radius: 1rem;">
             <div class="row">
@@ -12,14 +12,47 @@
             </div>
             <div class="row fixed-row align-items-center bg-darker">
                 <div class="d-flex justify-content-center">
-                    <img src="https://images.nationalgeographic.org/image/upload/t_edhub_resource_key_image/v1652341068/EducationHub/photos/ocean-waves.jpg" class="img-fluid p-3 fixed-height-img" alt="post">
+                    <img src="https://media.tenor.com/5KmcLLq8UxoAAAAC/mohammad-rajab-wali-wali-pok.gif" class="img-fluid p-3 fixed-height-img" alt="post">
+                </div>
+            </div>
+            <div class="row justify-content-between">
+                <div class="col-2 mt-2">
+                    <button id="like-post" class="btn btn-link ms-1"><i class="fa-regular fa-heart fa-2xl" style="color: #ffffff;"></i></button>
+                </div>
+                <div class="col-2 mt-2">
+                    <button id="erase-post" class="btn btn-link d-none"><i class="fa-regular fa-trash-can fa-xl" style="color: #ffffff;"></i></button>
                 </div>
             </div>
             <div class="row">
-                <div class="col-2 mt-1">
-                    <button id="button-like" class="btn btn-link"><i class="fa-regular fa-heart fa-2xl" style="color: #ff4444;"></i></button>
+                <div class="col mx-2 mb-2">
+                    <small>Liked by</small>
+                    <small id="like-count">1</small>
+                    <small>people</small>
+                    <hr style="margin: 0;" class="mt-2">
                 </div>
             </div>
+            <div>
+                <div class="row">
+                    <div class="col mx-2">
+                        <small class="fw-bold">Scienitive:</small>
+                        <small>Noluyo lan</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col mx-2">
+                        <small class="fw-bold">TugrulTurk:</small>
+                        <small>Anan oluyo</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col mx-2">
+                        <button type="button" class="btn btn-link text-white-50 text-decoration-none p-0">
+                            <small>- View more comments</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <hr style="margin: 0;" class="mx-2 mt-2">
             <div class="row">
                 <div class="col d-flex">
                     <input type="comment" id="input-comment" class="form-control form-control-sm transparent-input text-white" placeholder="Add a comment...">

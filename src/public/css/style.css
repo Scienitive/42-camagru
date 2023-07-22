@@ -16,10 +16,10 @@ body {
 
 /* These 2 needs to match each other */
 .fixed-row { 
-  height: 512px;
+  height: 480px;
 }
-.fixed-height-image {
-  height: 512px;
+.fixed-height-img {
+  max-height: 480px;
 }
 
 .bg-darker {
@@ -50,4 +50,8 @@ input[type="comment"]:focus {
   border-color: none !important;
   box-shadow: none !important;
   outline: none !important;
+}
+
+button:is(:has(i)) i {
+  pointer-events: none;
 }
