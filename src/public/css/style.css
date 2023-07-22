@@ -20,6 +20,7 @@ body {
 }
 .fixed-height-img {
   max-height: 480px;
+  object-fit: contain;
 }
 
 .bg-darker {
