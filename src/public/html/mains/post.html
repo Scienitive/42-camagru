@@ -30,34 +30,17 @@
                 </div>
             </div>
             <div id="comment-container">
-                <div class="row">
-                    <div class="col mx-2">
-                        <small class="fw-bold">Scienitive:</small>
-                        <small>Noluyo lan</small>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col mx-2">
-                        <small class="fw-bold">TugrulTurk:</small>
-                        <small>Anan oluyo</small>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col mx-2">
-                        <button type="button" class="btn btn-link text-white-50 text-decoration-none p-0">
-                            <small>- View more comments</small>
-                        </button>
-                    </div>
-                </div>
             </div>
             <hr style="margin: 0;" class="mx-2 mt-2">
             <div class="row">
-                <div class="col d-flex">
-                    <input type="comment" id="input-comment" class="form-control form-control-sm transparent-input text-white" placeholder="Add a comment...">
-                    <div class="input-group-append">
-                        <button type="button" id="button-send" class="btn btn-link"><i class="fa-solid fa-arrow-right" style="color: #ffffff;"></i></button>
+                <form id="comment-form">
+                    <div class="col d-flex">
+                        <input type="comment" id="input-comment" name="comment" class="form-control form-control-sm transparent-input text-white" placeholder="Add a comment...">
+                        <div class="input-group-append">
+                            <button type="submit" id="button-send" class="btn btn-link"><i class="fa-solid fa-arrow-right" style="color: #ffffff;"></i></button>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>

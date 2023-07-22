@@ -3,12 +3,12 @@
 $pdo = require(__DIR__ . "/../../models/database.php");
 
 $sql = "SELECT COUNT(*) AS count
-        FROM likes
-        WHERE user_id = ? AND post_id = ?";
+        FROM comments
+        WHERE comments.post_id = ?";
 
 try {
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$_GET['userId'], $_GET['postId']]);
+    $stmt->execute([$_GET['postId']]);
 
     $count = $stmt->fetchColumn();
     echo $count;

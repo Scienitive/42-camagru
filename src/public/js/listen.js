@@ -1,6 +1,6 @@
-import { AJAXDelete, AJAXGet, AJAXPost } from "./ajax.js";
-import { loadPosts } from "./posts.js";
-import { buttonLoadingOff, buttonLoadingOn, createNewToken, createNewTokenFromOldToken } from "./utility.js";
+import { AJAXDelete, AJAXGet, AJAXGetHTML, AJAXPost } from "./ajax.js";
+import { loadComments, loadPosts } from "./posts.js";
+import { buttonLoadingOff, buttonLoadingOn, createNewToken, createNewTokenFromOldToken, convertStringToElement } from "./utility.js";
 
 // Event Listener For Buttons
 document.addEventListener('click', async (e) => {
@@ -32,6 +32,11 @@ document.addEventListener('click', async (e) => {
                 likeCountElement.textContent = (parseInt(likeCountElement.textContent) - 1).toString();
             }
         }
+    }
+    else if (e.target.id === "more-comments-button") {
+        e.target.disabled = true;
+        const postId = e.target.getAttribute('post-id');
+        await loadComments(postId);
     }
 });
 
@@ -197,6 +202,37 @@ document.addEventListener('submit', async (e) => {
             alertElement.classList.remove('d-none');
             buttonLoadingOff(submitButton);
         }
+    }
+    else if (e.target.id === "comment-form") {
+        const commentInput = e.target.querySelector('#input-comment');
+        if (commentInput.value === '') {return;}
+        const session = await (await AJAXGet("current-session.php")).json();
+        const postId = e.target.getAttribute('post-id');
+
+        const commentResponse = await AJAXPost("comment.controller.php", { userId: session['user-id'], postId: postId, comment: formData.get('comment') });
+        if (commentResponse.ok) {
+            const commentId = await commentResponse.text();
+            const username = (await (await AJAXGet("user.controller.php", { id: session['user-id'] })).json()).username;
+            const commentContainer = document.querySelector(`[post-id="${postId}"]#comment-container`);
+            const lastElement = commentContainer.lastElementChild;
+
+            const newElement = convertStringToElement(await (await AJAXGetHTML(`mains/comment.html`)).text());
+            const usernameElement = newElement.querySelector('#comment-username');
+            const contentElement = newElement.querySelector('#comment-content');
+
+            newElement.setAttribute('comment-id', commentId);
+            usernameElement.textContent = `${username}:`;
+            contentElement.textContent = formData.get('comment');
+    
+            if (lastElement === null || lastElement.id != "view-more-comments") {
+                commentContainer.appendChild(newElement);
+            }  
+            else {
+                commentContainer.insertBefore(newElement, lastElement);
+            }
+        }
+
+        e.target.reset();
     }
 })
 

@@ -1,5 +1,4 @@
 <?php
-include(__DIR__ . "/../../models/session.php");
 
 $pdo = require(__DIR__ . "/../../models/database.php");
 

@@ -25,6 +25,8 @@ export const loadPosts = async (container) => {
         const likeCountElement = newElement.querySelector('#like-count');
         const dateElement = newElement.querySelector('#post-date');
         const likeButton = newElement.querySelector('#like-post');
+        const commentContainer = newElement.querySelector('#comment-container');
+        const commentForm = newElement.querySelector('#comment-form');
 
         usernameElement.textContent = post.username;
         imageElement.src = post.image;
@@ -32,6 +34,8 @@ export const loadPosts = async (container) => {
         likeCountElement.setAttribute('post-id', post.id.toString());
         dateElement.textContent = determineDate(post.created_at);
         likeButton.setAttribute('post-id', post.id.toString());
+        commentContainer.setAttribute('post-id', post.id.toString());
+        commentForm.setAttribute('post-id', post.id.toString());
 
         const likeResponse = await AJAXGet("like.controller.php", { userId: session['user-id'], postId: post.id.toString() });
         if (likeResponse.ok && (await likeResponse.text()) !== '0') {
@@ -41,7 +45,62 @@ export const loadPosts = async (container) => {
             icon.style.color = '#dc3545';
         }
 
+        await loadComments(post.id, commentContainer);
+
         container.appendChild(newElement);
+    }
+}
+
+export const loadComments = async (postId, container = document.querySelector(`[post-id="${postId}"]#comment-container`)) => {
+    let firstElement;
+    if (container.children.length > 0) {
+        firstElement = container.firstChild;
+    }
+    else {
+        firstElement = null;
+    }
+    const viewMoreCommentsElement = container.querySelector('#view-more-comments');
+    if (viewMoreCommentsElement) {
+        container.removeChild(viewMoreCommentsElement);
+    }
+    
+    let lastCommentId = null;
+    if (firstElement != null) {
+        lastCommentId = parseInt(firstElement.getAttribute('comment-id'));
+    }
+
+    let comments;
+    if (lastCommentId != null) {
+        comments = Object.values(await (await AJAXGet("comment.controller.php", { postId: postId, lastCommentId: lastCommentId })).json());
+    }
+    else {
+        comments = Object.values(await (await AJAXGet("comment.controller.php", { postId: postId })).json());
+    }
+
+    const commentElement = convertStringToElement(await (await AJAXGetHTML(`mains/comment.html`)).text());
+
+    for (const comment of comments) {
+        const newElement = commentElement.cloneNode(true);
+        const containerFirstElement = container.firstChild;
+
+        const usernameElement = newElement.querySelector('#comment-username');
+        const contentElement = newElement.querySelector('#comment-content');
+
+        newElement.setAttribute('comment-id', comment.id.toString());
+        usernameElement.textContent = `${comment.username}:`;
+        contentElement.textContent = comment.comment;
+
+        container.insertBefore(newElement, containerFirstElement);
+    }
+
+    const allCommentCount = parseInt(await (await AJAXGet("comment-count.controller.php", { postId: postId })).text());
+
+    if (allCommentCount > container.children.length) {
+        const viewMoreCommentsHTML = convertStringToElement(await (await AJAXGetHTML(`mains/view-more-comments.html`)).text());
+        const button = viewMoreCommentsHTML.querySelector('#more-comments-button');
+
+        button.setAttribute('post-id', postId.toString());
+        container.appendChild(viewMoreCommentsHTML);
     }
 }
 

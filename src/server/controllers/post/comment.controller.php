@@ -2,16 +2,15 @@
 
 $pdo = require(__DIR__ . "/../../models/database.php");
 
-$sql = "SELECT COUNT(*) AS count
-        FROM likes
-        WHERE user_id = ? AND post_id = ?";
+$sql = "INSERT INTO comments (user_id, post_id, comment)
+        VALUES (?, ?, ?)";
 
 try {
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$_GET['userId'], $_GET['postId']]);
+    $stmt->execute([$_POST['userId'], $_POST['postId'], $_POST['comment']]);
 
-    $count = $stmt->fetchColumn();
-    echo $count;
+    $lastInsertedId = $pdo->lastInsertId();
+    echo $lastInsertedId;
 }
 catch (PDOException $e) {
     http_response_code(500); // 500 Internal Server Error
