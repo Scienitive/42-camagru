@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS posts (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  post_created_at DATETIME NOT NULL,
+  post_created_at DATETIME DEFAULT NOW(),
   user_id INT NOT NULL,
   image VARCHAR(255) NOT NULL,
   like_count INT DEFAULT 0,
@@ -49,5 +49,5 @@ VALUES ('2023-07-22 13:11:12', 1, 'https://cdn.discordapp.com/attachments/588224
 INSERT INTO posts (post_created_at, user_id, image)
 VALUES ('2023-07-22 13:11:12', 1, 'https://cdn.discordapp.com/attachments/588224082789662720/1082394143285850152/FqfljNDWcAEqWCW.png');
 
-INSERT INTO posts (post_created_at, user_id, image)
-VALUES ('2023-07-22 13:11:12', 1, 'https://cdn.discordapp.com/attachments/588224082789662720/1082116946641829928/150794_306757352735748_1124051446_n.png');
+INSERT INTO posts (user_id, image)
+VALUES (1, 'https://cdn.discordapp.com/attachments/588224082789662720/1082116946641829928/150794_306757352735748_1124051446_n.png');
