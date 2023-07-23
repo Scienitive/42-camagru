@@ -46,6 +46,17 @@ export const loadPosts = async (container) => {
         }
 
         await loadComments(post.id, commentContainer);
+        
+        const divider = newElement.querySelector('#divider');
+        const likedText = newElement.querySelector('#liked-count-text');
+        if (commentContainer.children.length === 0) {
+            divider.classList.add('d-none');
+            likedText.classList.remove('mb-2');
+        }
+        else {
+            divider.classList.remove('d-none');
+            likedText.classList.add('mb-2');
+        }
 
         container.appendChild(newElement);
     }
