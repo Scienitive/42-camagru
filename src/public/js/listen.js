@@ -1,5 +1,6 @@
 import { AJAXDelete, AJAXGet, AJAXGetHTML, AJAXPost } from "./ajax.js";
 import { loadComments, loadPosts } from "./posts.js";
+import { setSettings } from "./settings.js";
 import { buttonLoadingOff, buttonLoadingOn, createNewToken, createNewTokenFromOldToken, convertStringToElement } from "./utility.js";
 
 // Event Listener For Buttons
@@ -310,8 +311,8 @@ export const afterPageLoad = async (location) => {
 
         const emailInput = document.getElementById('email');
         const usernameInput = document.getElementById('uname');
-        const notifOn = document.getElementById('success-outlined');
-        const notifOff = document.getElementById('danger-outlined');
+        const notifOn = document.getElementById('notification-on');
+        const notifOff = document.getElementById('notification-off');
         
         emailInput.placeholder = user.email;
         usernameInput.placeholder = user.username;
@@ -322,5 +323,6 @@ export const afterPageLoad = async (location) => {
             notifOff.setAttribute('checked', 'true');
         }
 
+        setSettings();
     }
 }
