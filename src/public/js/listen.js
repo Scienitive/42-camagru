@@ -304,4 +304,23 @@ export const afterPageLoad = async (location) => {
         }
         await createNewTokenFromOldToken(token);
     }
+    else if (location === '/settings') {
+        const session = await (await AJAXGet("current-session.php")).json();
+        const user = await (await AJAXGet("user.controller.php", { id: session['user-id'] })).json();
+
+        const emailInput = document.getElementById('email');
+        const usernameInput = document.getElementById('uname');
+        const notifOn = document.getElementById('success-outlined');
+        const notifOff = document.getElementById('danger-outlined');
+        
+        emailInput.placeholder = user.email;
+        usernameInput.placeholder = user.username;
+        if (user.email_notification) {
+            notifOn.setAttribute('checked', 'true');
+        }
+        else {
+            notifOff.setAttribute('checked', 'true');
+        }
+
+    }
 }

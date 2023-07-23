@@ -63,6 +63,12 @@ const urlRoutes = {
         title: "Camagru | Password Change",
         headerLink: "signup.html",
         mainLink: "password-change-2.html"
+    },
+    "/settings": {
+        name: "/settings",
+        title: "Camagru | Settings",
+        headerLink: "signup.html",
+        mainLink: "settings.html"
     }
 };
 

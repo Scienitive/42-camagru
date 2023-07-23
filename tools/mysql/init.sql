@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS users (
   username VARCHAR(128) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   verification_token VARCHAR(255) NOT NULL UNIQUE,
-  is_verified TINYINT(1) DEFAULT 0
+  is_verified TINYINT(1) DEFAULT 0,
+  email_notification TINYINT(1) DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS posts (

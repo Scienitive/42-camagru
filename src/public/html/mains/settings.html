@@ -1,0 +1,49 @@
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-10 col-md-8 col-lg-6 col-xl-5">
+            <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                <form id="signup-form" class="card-body p-5 text-center">
+                    <h2 class="fw-bold mb-2 text-uppercase">Settings</h2>
+                    <p class="text-white-50 mb-3">Change your personal information!</p>
+
+                    <div id="alert" class="alert alert-danger mx-5 mb-4 d-none" role="alert"></div>
+
+                    <div class="form-outline form-white mb-1 mt-2 input-group">
+                        <input type="email" id="email" name="email" class="form-control form-control-lg text-center w-50" />
+                        <button class="btn btn-outline-secondary" type="button">Send</button>
+                        <input type="email" id="email" name="email" class="form-control form-control-lg text-center" />
+                    </div>
+                    <label class="form-label mb-3" for="email">Email</label>
+
+                    <div class="form-outline form-white mb-1">
+                        <input type="name" id="uname" name="uname" class="form-control form-control-lg text-center" />
+                    </div>
+                    <label class="form-label mb-3" for="uname">Username</label>
+
+                    <div class="form-outline form-white mb-1">
+                        <input type="password" id="password" name="password" class="form-control form-control-lg text-center" />
+                    </div>
+                    <label class="form-label mb-3" for="password">Password</label>
+
+                    <div class="form-outline form-white mb-1 d-flex justify-content-center">
+                        <div class="w-50">
+                            <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off">
+                            <label class="btn btn-outline-success w-75" for="success-outlined">On</label>
+                        </div>
+                        <div class="w-50">
+                            <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
+                            <label class="btn btn-outline-danger w-75" for="danger-outlined">Off</label>
+                        </div>
+                    </div>
+                    <label class="form-label mb-3">Email Notification</label>
+                    <div class="mb-2"></div>
+
+                    <button class="btn btn-outline-light btn-lg px-5 w-50" type="submit">
+                        <span class="btn-text">Save</span>
+                        <div class="spinner-border d-none" role="status"></div>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
