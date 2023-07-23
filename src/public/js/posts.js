@@ -28,7 +28,9 @@ export const loadPosts = async (container) => {
         const commentContainer = newElement.querySelector('#comment-container');
         const commentForm = newElement.querySelector('#comment-form');
 
+        newElement.setAttribute('post-id', post.id.toString());
         usernameElement.textContent = post.username;
+        usernameElement.setAttribute('post-id', post.id.toString());
         imageElement.src = post.image;
         likeCountElement.textContent = post.like_count;
         likeCountElement.setAttribute('post-id', post.id.toString());

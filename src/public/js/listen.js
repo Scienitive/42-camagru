@@ -208,8 +208,10 @@ document.addEventListener('submit', async (e) => {
         if (commentInput.value === '') {return;}
         const session = await (await AJAXGet("current-session.php")).json();
         const postId = e.target.getAttribute('post-id');
+        const comment = formData.get('comment');
+        e.target.reset();
 
-        const commentResponse = await AJAXPost("comment.controller.php", { userId: session['user-id'], postId: postId, comment: formData.get('comment') });
+        const commentResponse = await AJAXPost("comment.controller.php", { userId: session['user-id'], postId: postId, comment: comment });
         if (commentResponse.ok) {
             const commentId = await commentResponse.text();
             const username = (await (await AJAXGet("user.controller.php", { id: session['user-id'] })).json()).username;
@@ -222,7 +224,7 @@ document.addEventListener('submit', async (e) => {
 
             newElement.setAttribute('comment-id', commentId);
             usernameElement.textContent = `${username}:`;
-            contentElement.textContent = formData.get('comment');
+            contentElement.textContent = comment;
     
             if (lastElement === null || lastElement.id != "view-more-comments") {
                 commentContainer.appendChild(newElement);
@@ -230,9 +232,22 @@ document.addEventListener('submit', async (e) => {
             else {
                 commentContainer.insertBefore(newElement, lastElement);
             }
+
+            const postContainer = document.querySelector(`[post-id="${postId}"]#post-container`);
+            const divider = postContainer.querySelector('#divider');
+            const likedText = postContainer.querySelector('#liked-count-text');
+            divider.classList.remove('d-none');
+            likedText.classList.add('mb-2');
+
+            const postUsername = (document.querySelector(`[post-id="${postId}"]#post-username`)).textContent;
+            if (postUsername !== username) {
+                const postMail = (await (await AJAXGet("user.controller.php", { username: postUsername })).json()).email;
+                const mailSubject = "Camagru - New Comment On Your Post";
+                const mailContent = `Hi ${postUsername},\n\nOne of your posts just got a new comment from ${username}.\n--> ${username}: ${comment}\n\nThanks,\n- Camagru`;
+                await AJAXPost("send-mail.controller.php", { email: postMail, subject: mailSubject, content: mailContent });
+            }
         }
 
-        e.target.reset();
     }
 })
 

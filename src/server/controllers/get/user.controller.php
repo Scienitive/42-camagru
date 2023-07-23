@@ -12,6 +12,11 @@ else if (isset($_GET['email'])) {
             WHERE email = ?";
     $var = $_GET['email'];
 }
+else if (isset($_GET['username'])) {
+    $sql = "SELECT * FROM users
+            WHERE username = ?";
+    $var = $_GET['username'];
+}
 else if (isset($_GET['token'])) {
     $sql = "SELECT * FROM users
             WHERE verification_token = ?";
