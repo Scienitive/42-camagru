@@ -69,6 +69,12 @@ const urlRoutes = {
         title: "Camagru | Settings",
         headerLink: "home.html",
         mainLink: "settings.html"
+    },
+    "/create-post": {
+        name: "/create-post",
+        title: "Camagru | New Post",
+        headerLink: "home.html",
+        mainLink: "create-post.html"
     }
 };
 
