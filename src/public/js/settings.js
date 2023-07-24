@@ -51,7 +51,7 @@ export const setSettings = async () => {
         }
 
         const mailSubject = "Camagru - Email Verification";
-        const mailContent = `Hi ${user.username},\n\nWelcome to Camagru!\n\nYour new email verification code is: ${user.verification_token.substring(0,4).toUpperCase()}\n\nThanks,\n- Camagru`;
+        const mailContent = `Hi ${user.username},\n\nYour new email verification code is: ${user.verification_token.substring(0,4).toUpperCase()}\n\nThanks,\n- Camagru`;
         const mailResponse = await AJAXPost("send-mail.controller.php", { email: newEmail, subject: mailSubject, content: mailContent });
         if (mailResponse.ok) {
             emailSent = true;
