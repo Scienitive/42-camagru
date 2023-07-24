@@ -323,6 +323,6 @@ export const afterPageLoad = async (location) => {
             notifOff.setAttribute('checked', 'true');
         }
 
-        setSettings();
+        await setSettings();
     }
 }

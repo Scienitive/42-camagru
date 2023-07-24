@@ -44,18 +44,29 @@ export const buttonLoadingOn = (button) => {
 
 export const buttonLoadingOff = (button, removeDisabled = true) => {
     if (!button) {return;}
-    const buttonText = button.querySelector('.btn-text');
-    const spinner = button.querySelector('.spinner-border');
+    setTimeout(() => {
+        const buttonText = button.querySelector('.btn-text');
+        const spinner = button.querySelector('.spinner-border');
 
-    if (buttonText && spinner)  {
-        button.disabled = !removeDisabled;
-        buttonText.classList.remove('d-none');
-        spinner.classList.add('d-none');
-    }
+        if (buttonText && spinner)  {
+            button.disabled = !removeDisabled;
+            buttonText.classList.remove('d-none');
+            spinner.classList.add('d-none');
+        }
+    }, 1);
 }
 
 export const convertStringToElement = (htmlString) => {
     const parser = new DOMParser();
     const parsedDocument = parser.parseFromString(htmlString, 'text/html');
     return parsedDocument.body.firstChild;
+}
+
+export const alertModify = (alertElement, message, red = true) => {
+    alertElement.classList.remove('d-none');
+    alertElement.textContent = message;
+    if (!red) {
+        alertElement.classList.remove('alert-danger');
+        alertElement.classList.add('alert-success');
+    }
 }
