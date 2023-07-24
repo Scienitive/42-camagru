@@ -25,7 +25,7 @@ const urlRoutes = {
     "/": {
         name: "/",
         title: "Camagru",
-        headerLink: "signup.html",
+        headerLink: "home.html",
         mainLink: "home.html"
     },
     "/login": {
@@ -67,7 +67,7 @@ const urlRoutes = {
     "/settings": {
         name: "/settings",
         title: "Camagru | Settings",
-        headerLink: "signup.html",
+        headerLink: "home.html",
         mainLink: "settings.html"
     }
 };
@@ -77,11 +77,16 @@ const urlRoute = (event) => {
     const absoluteURL = event.target.href;
     const url = new URL(absoluteURL);
     const relativePath = url.pathname.length > 0 ? url.pathname : "/";
-    urlLocationHandler(relativePath);
+    if (relativePath === window.location.pathname) {
+        window.location.reload();
+    }
+    else {
+        urlLocationHandler(relativePath);
+    }
     
 };
 
-const urlLocationHandler = async (pathname) => {
+const urlLocationHandler = async (pathname, reload = false) => {
     let location;
     if (typeof(pathname) != "object") { // If it hasn't come from window.onpopstate
         location = pathname || window.location.pathname;
@@ -92,10 +97,14 @@ const urlLocationHandler = async (pathname) => {
     let route = urlRoutes[location] || urlRoutes["/404"];
     route = await changeRoute(route);
     location = route.name;
-    const headerElement = await (await AJAXGetHTML(`headers/${route.headerLink}`)).text();
-    const mainElement = await (await AJAXGetHTML(`mains/${route.mainLink}`)).text();
-    document.getElementById('header-section').innerHTML = headerElement;
-    document.getElementById('main-section').innerHTML = mainElement;
+    if (route.headerLink !== "") {
+        const headerElement = await (await AJAXGetHTML(`headers/${route.headerLink}`)).text();
+        document.getElementById('header-section').innerHTML = headerElement;
+    }
+    if (route.mainLink !== "") {
+        const mainElement = await (await AJAXGetHTML(`mains/${route.mainLink}`)).text();
+        document.getElementById('main-section').innerHTML = mainElement;
+    }
     afterPageLoad(location);
 
     if (typeof(pathname) != "object") { // If it hasn't come from window.onpopstate
@@ -118,6 +127,9 @@ const changeRoute = async (route) => {
     }
     else if (route.name === "/signup") {
         route = session.hasOwnProperty('user-id') ? urlRoutes["/"] : urlRoutes["/signup"];
+    }
+    else if (route.name === "/settings") {
+        route = session.hasOwnProperty('user-id') ? urlRoutes["/settings"] : urlRoutes["/404"];
     }
 
     return route;

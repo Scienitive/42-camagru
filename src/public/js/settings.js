@@ -94,8 +94,6 @@ export const setSettings = async () => {
         const jsonData = {};
         let errorMessage = "";
         if (newEmail) {
-            console.log(verification);
-            console.log(user.verification_token.substring(0, 4).toUpperCase());
             const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             if (!emailRegex.test(newEmail)) {errorMessage = "Please provide a valid email address.";}
             else if (user.email === newEmail) {errorMessage = `Your email address is already ${newEmail}.`;}
@@ -142,8 +140,6 @@ export const setSettings = async () => {
         if (newNotification != user.email_notification) {
             jsonData.emailNotification = newNotification ? 1 : 0;
         }
-
-        console.log(jsonData);
 
         if (Object.entries(jsonData).length === 0) {
             alertModify(alertElement, "Please change something before hitting save.");
