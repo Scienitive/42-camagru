@@ -1,7 +1,7 @@
 export const setCreatePost = async () => {
     const videoElement = document.getElementById('webcam');
     const noWebcamElement = document.getElementById('no-webcam');
-    const canvas = document.getElementById('canvas');
+    const imageElement = document.getElementById('image');
     const imageInput = document.getElementById('image-input');
     const captureButton = document.getElementById('capture-button');
     const uploadButton = document.getElementById('upload-button');
@@ -9,80 +9,13 @@ export const setCreatePost = async () => {
     const cancelButton = document.getElementById('cancel-button');
     const stickerContainer = document.getElementById('sticker-container');
     const previewContainer = document.getElementById('preview-container');
+    const mainContainer = document.getElementById('main-container');
     const stickerElements = document.getElementsByClassName('sticker');
     let mediaStream = null;
     let captureMode = true;
 
-    // Canvas
-    let baseImage = null;
-    let stickerArray = [];
-
-    class Sticker {
-        constructor(width, height, scaleX, scaleY, imageUrl) {
-            this.x = 0;
-            this.y = 0;
-            this.width = width;
-            this.height = height;
-            this.scaleX = scaleX;
-            this.scaleY = scaleY;
-            this.image = new Image();
-            this.image.width = 10;
-            this.image.height = 10;
-            this.image.src = imageUrl;
-        }
-    }
-
-    const startCanvas = (width, height, image) => {
-        const ctx = canvas.getContext('2d');
-        canvas.classList.remove('d-none');
-
-        canvas.width = width;
-        canvas.height = height;
-        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-        baseImage = new Image();
-        baseImage.src = canvas.toDataURL();
-    }
-
-    const drawCanvas = async () => {
-        const ctx = canvas.getContext('2d');
-
-        // Clear the canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw the base image
-        ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
-
-        // Draw stickers
-        for (const sticker of stickerArray) {
-            setTimeout(() => {
-            ctx.drawImage(sticker.image, canvas.width / 2 + sticker.x, canvas.height / 2 + sticker.y);
-            }, 1000);
-        }
-    }
-
-    const endCanvas = () => {
-        const ctx = canvas.getContext('2d');
-        canvas.classList.add('d-none');
-
-        baseImage = null;
-        stickerArray = [];
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    canvas.addEventListener('mousemove', () => {
-        for (let i = stickerArray.length - 1; i >= 0; i--) {
-
-        }
-    });
-
-    canvas.addEventListener('mousedown', () => {
-        for (let i = stickerArray.length - 1; i >= 0; i--) {
-
-        }
-    });
-
     const startWebcam = async () => { // USE WITH AWAIT
-        endCanvas();
+        imageElement.classList.add('d-none');
         try {
             const constraints = { video: true };
             mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -104,11 +37,16 @@ export const setCreatePost = async () => {
         }
         videoElement.classList.add('d-none');
         noWebcamElement.classList.add('d-none');
+        imageElement.classList.remove('d-none');
     }
 
     const changeMode = async () => { // USE WITH AWAIT
         captureMode = !captureMode;
         if (captureMode) {
+            const liveStickers = mainContainer.querySelectorAll(".live-sticker");
+            for (const liveSticker of liveStickers) {
+                liveSticker.remove();
+            }
             await startWebcam();
             captureButton.classList.remove('d-none');
             uploadButton.classList.remove('d-none');
@@ -145,8 +83,14 @@ export const setCreatePost = async () => {
     }
 
     captureButton.addEventListener('click', async () => {
-        startCanvas(videoElement.videoWidth, videoElement.videoHeight, videoElement);
-        createPreview(canvas.toDataURL());
+        const canvas = document.createElement('canvas');
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        imageElement.src = canvas.toDataURL();
+        canvas.remove();
+        createPreview(imageElement.src);
         await changeMode();
     });
 
@@ -158,13 +102,8 @@ export const setCreatePost = async () => {
         const file = imageInput.files[0];
         const reader = new FileReader();
         reader.onload = (event) => {
-            const uploadedImage = new Image();
-            uploadedImage.onload = () => {
-                startCanvas(uploadedImage.width, uploadedImage.height, uploadedImage);
-            }
-            uploadedImage.src = event.target.result;
-            createPreview(event.target.result);
-            uploadedImage.remove();
+            imageElement.src = event.target.result;
+            createPreview(imageElement.src);
         }
         reader.readAsDataURL(file);
         imageInput.value = '';
@@ -175,19 +114,34 @@ export const setCreatePost = async () => {
         await changeMode();
     });
 
+    document.addEventListener('click', async (event) => {
+        // Preview Images Click Event
+        if (event.target.classList.contains('preview-image')) {
+            imageElement.src = event.target.src;
+            await changeMode();
+        }
+    });
+
+    // Sticker Element Click Event
     for (const stickerElement of stickerElements) {
-        stickerElement.addEventListener('click', async (event) => {
-            const width = event.target.naturalWidth;
-            const height = event.target.naturalHeight;
-            let scaleX = 1;
-            let scaleY = 1;
-            const stickerInitialSize = 10; // The bigger the value it gets smaller
-            while (width * scaleX > canvas.width / stickerInitialSize || height * scaleY > canvas.width / stickerInitialSize) {
-                scaleX -= 0.1;
-                scaleY -= 0.1;
-            }
-            stickerArray.push(new Sticker(width, height, scaleX, scaleY, event.target.src));
-            await drawCanvas();
+        stickerElement.addEventListener('click', (event) => {
+            const newSticker = document.createElement('img');
+            newSticker.src = event.target.src;
+            newSticker.classList.add('live-sticker');
+            //newSticker.style.width = "100px";
+            //newSticker.style.height = "100px";
+            mainContainer.appendChild(newSticker);
         });
     }
+
+    window.addEventListener('resize', () => {
+        const liveStickers = mainContainer.querySelectorAll(".live-sticker");
+        for (const liveSticker of liveStickers) {
+            const computedStyle = window.getComputedStyle(liveSticker);
+            const displayedHeight = computedStyle.getPropertyValue("height");
+            const displayedWidth = computedStyle.getPropertyValue("width");
+            console.log(`width: ${displayedWidth}`);
+            console.log(`height: ${displayedHeight}`);
+        }
+    })
 }

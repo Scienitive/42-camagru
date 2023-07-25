@@ -69,12 +69,13 @@ button:is(:has(small)) small {
 }
 
 .live-sticker {
-  top: 50px;
-  left: 50px;
-  width: 100px;
-  height: 100px;
+  width: 20%;
+  height: auto;
+  max-height: 100%;
+  padding: 0;
   position: absolute;
-  background-color: blueviolet;
+  border: 3px solid black;
+  object-fit: contain;
 }
 
 .preview-image {
