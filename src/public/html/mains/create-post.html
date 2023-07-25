@@ -1,13 +1,46 @@
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-sm-8 my-2">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-sm-9 my-2">
             <div class="card bg-dark text-white" style="border-radius: 1rem;">
                 <div class="container">
                     <div class="row justify-content-center align-items-center mx-2 my-3 bg-darker" style="height: 75vh; border-radius: 1rem;">
                         <video id="webcam" autoplay style="width: 100%; height: 100%; object-fit: contain;"></video>
                         <img id="no-webcam" src="/public/media/no-webcam.png" alt="" class="d-none" style="width: 30%; height: 30%; object-fit: contain;">
-                        <img id="the-image" alt="" class="d-none" style="width: 100%; height: 100%; object-fit: contain;">
+                        <canvas id="canvas" class="d-none" style="width: 100%; height: 100%; object-fit: contain;"></canvas>
+                        <div class="live-sticker"></div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3 my-2">
+            <div class="card bg-dark text-white" style="height: 70vh; border-radius: 1rem;">
+                <div id="sticker-container" class="container d-none" style="overflow: scroll;">
+                    <div class="row">
+                        <div class="col-12 col-lg-6 my-2">
+                            <img id="sticker-1" src="/public/media/sticker-1.png" alt="" class="sticker">
+                        </div>
+                        <div class="col-12 col-lg-6 my-2">
+                            <img id="sticker-2" src="/public/media/sticker-2.png" alt="" class="sticker">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-lg-6 my-2">
+                            <img id="sticker-3" src="/public/media/sticker-3.png" alt="" class="sticker">
+                        </div>
+                        <div class="col-12 col-lg-6 my-2">
+                            <img id="sticker-4" src="/public/media/sticker-4.png" alt="" class="sticker">
+                        </div>
+                    </div>
+                </div>
+                <div id="preview-container" class="container" style="overflow: scroll;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-start">
+        <div class="col-9">
+            <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                <div class="container">
                     <div class="row">
                         <div class="col">
                             <button id="capture-button" class="btn btn-primary">Capture</button>
@@ -20,10 +53,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-sm-4 my-2">
-            <div class="card bg-dark text-white" style="border-radius: 1rem; height: 500px;">
             </div>
         </div>
     </div>

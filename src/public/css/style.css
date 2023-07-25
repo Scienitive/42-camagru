@@ -60,3 +60,27 @@ button:is(:has(i)) i {
 button:is(:has(small)) small {
   pointer-events: none;
 }
+
+.sticker {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.live-sticker {
+  top: 50px;
+  left: 50px;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  background-color: blueviolet;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  max-height: 25vh;
+  object-fit: contain;
+  cursor: pointer;
+}
