@@ -135,7 +135,6 @@ export const setCreatePost = async () => {
         reader.readAsDataURL(file);
         imageInput.value = '';
         await changeMode();
-        dasdaf();
     });
 
     cancelButton.addEventListener('click', async () => {
@@ -148,7 +147,6 @@ export const setCreatePost = async () => {
             imageElement.src = event.target.src;
             setLiveStickerContainer();
             await changeMode();
-            dasdaf();
         }
     });
 
@@ -163,13 +161,16 @@ export const setCreatePost = async () => {
             newSticker.style.top = `0px`;
             newSticker.style.width = `20%`;
             newSticker.style.height = 'auto';
+            setTimeout(() => {
+                newSticker.style.height = heightToPercentage(newSticker.style.height, newSticker.style.width, newSticker.naturalWidth / newSticker.naturalHeight, liveStickerContainer.offsetHeight, liveStickerContainer.offsetWidth);
+            }, 1);
             liveStickerContainer.appendChild(newSticker);
         });
     }
 
     // Live Stickers
     let currentLiveSticker = null;
-    let isResizing = false;
+    let resizeDirection = null;
     let prevX = 0;
     let prevY = 0;
 
@@ -209,6 +210,21 @@ export const setCreatePost = async () => {
             prevX = event.clientX;
             prevY = event.clientY;
         }
+        if (event.target.style.cursor === 'auto') {
+            resizeDirection = null;
+        }
+        else if (event.target.style.cursor === 'n-resize') {
+            resizeDirection = 'top';
+        }
+        else if (event.target.style.cursor === 's-resize') {
+            resizeDirection = 'bottom';
+        }
+        else if (event.target.style.cursor === 'w-resize') {
+            resizeDirection = 'left';
+        }
+        else if (event.target.style.cursor === 'e-resize') {
+            resizeDirection = 'right';
+        }
     });
 
     document.addEventListener('mouseup', () => {
@@ -247,49 +263,72 @@ export const setCreatePost = async () => {
                 }
             }
             currentLiveSticker = null;
+            resizeDirection = null;
         }
     });
 
     window.addEventListener('mousemove', (event) => {
-        // Moving the sticker
-        if (currentLiveSticker) {
-            const newX = prevX - event.clientX;
-            const newY = prevY - event.clientY;
+        if (!captureMode) {
+            if (currentLiveSticker) {
+                const newX = prevX - event.clientX;
+                const newY = prevY - event.clientY;
 
-            currentLiveSticker.style.left = `${parseInt(changeToPixel(currentLiveSticker.style.left, liveStickerContainer.offsetWidth)) - newX}px`;
-            currentLiveSticker.style.top = `${parseInt(changeToPixel(currentLiveSticker.style.top, liveStickerContainer.offsetHeight)) - newY}px`;
+                // Moving the sticker
+                if (!resizeDirection) {
+                    currentLiveSticker.style.left = `${parseInt(changeToPixel(currentLiveSticker.style.left, liveStickerContainer.offsetWidth)) - newX}px`;
+                    currentLiveSticker.style.top = `${parseInt(changeToPixel(currentLiveSticker.style.top, liveStickerContainer.offsetHeight)) - newY}px`;
+                }
 
-            prevX = event.clientX;
-            prevY = event.clientY;
-        }
+                // Resizing the sticker
+                else if (resizeDirection === 'right') {
+                    currentLiveSticker.style.width = `${parseInt(changeToPixel(currentLiveSticker.style.width, liveStickerContainer.offsetWidth)) - newX}px`;
+                    //if () // Resize COntrols
+                }
+                else if (resizeDirection === 'left') {
+                    currentLiveSticker.style.width = `${parseInt(changeToPixel(currentLiveSticker.style.width, liveStickerContainer.offsetWidth)) + newX}px`;
+                    currentLiveSticker.style.left = `${parseInt(changeToPixel(currentLiveSticker.style.left, liveStickerContainer.offsetWidth)) - newX}px`;
+                }
+                else if (resizeDirection === 'bottom') {
+                    const ap = currentLiveSticker.naturalWidth / currentLiveSticker.naturalHeight;
+                    currentLiveSticker.style.height = `${parseInt(heightToPixel(currentLiveSticker.style.height, currentLiveSticker.style.width, ap, liveStickerContainer.offsetHeight, liveStickerContainer.offsetWidth)) - newY}px`;
+                }
+                else if (resizeDirection === 'top') {
+                    const ap = currentLiveSticker.naturalWidth / currentLiveSticker.naturalHeight;
+                    currentLiveSticker.style.height = `${parseInt(heightToPixel(currentLiveSticker.style.height, currentLiveSticker.style.width, ap, liveStickerContainer.offsetHeight, liveStickerContainer.offsetWidth)) + newY}px`;
+                    currentLiveSticker.style.top = `${parseInt(changeToPixel(currentLiveSticker.style.top, liveStickerContainer.offsetWidth)) - newY}px`;
+                }
 
-        // Cursor Changes
-        if (!captureMode && event.target.classList.contains('live-sticker')) {
-            const { left, top, right, bottom } = event.target.getBoundingClientRect();
-
-            const ap = event.target.naturalWidth / event.target.naturalHeight;
-            const borderRatio = 5/100;
-            let borderWidth = Math.floor(parseInt(changeToPixel(event.target.style.width, liveStickerContainer.offsetWidth)) * borderRatio);
-            let borderHeight = Math.floor(parseInt(heightToPixel(event.target.style.height, event.target.style.width, ap, liveStickerContainer.offsetHeight, liveStickerContainer.offsetWidth)) * borderRatio);
-            if (borderHeight < 2) {borderHeight = 2;}
-            if (borderWidth < 2) {borderWidth = 2;}
-            console.log(borderWidth);
-            console.log(borderHeight);
-
-            if (event.clientY >= top && event.clientY <= top + borderHeight) {
-                event.target.style.cursor = 'n-resize';
+                prevX = event.clientX;
+                prevY = event.clientY;
             }
-            else if (event.clientY >= bottom - borderHeight && event.clientY <= bottom) {
-                event.target.style.cursor = 's-resize';
-            }
-            else if (event.clientX >= left && event.clientX <= left + borderWidth) {
-                event.target.style.cursor = 'w-resize';
-            }
-            else if (event.clientX >= right - borderWidth && event.clientX <= right) {
-                event.target.style.cursor = 'e-resize';
-            }
-            else {
-                event.target.style.cursor = 'auto';
+
+            // Cursor Changes
+            if (event.target.classList.contains('live-sticker')) {
+                if (!resizeDirection) {
+                const { left, top, right, bottom } = event.target.getBoundingClientRect();
+                const ap = event.target.naturalWidth / event.target.naturalHeight;
+                const borderRatio = 5/100;
+                let borderWidth = Math.floor(parseInt(changeToPixel(event.target.style.width, liveStickerContainer.offsetWidth)) * borderRatio);
+                let borderHeight = Math.floor(parseInt(heightToPixel(event.target.style.height, event.target.style.width, ap, liveStickerContainer.offsetHeight, liveStickerContainer.offsetWidth)) * borderRatio);
+                if (borderHeight < 2) {borderHeight = 2;}
+                if (borderWidth < 2) {borderWidth = 2;}
+
+                    if (event.clientY >= top && event.clientY <= top + borderHeight) {
+                        event.target.style.cursor = 'n-resize';
+                    }
+                    else if (event.clientY >= bottom - borderHeight && event.clientY <= bottom) {
+                        event.target.style.cursor = 's-resize';
+                    }
+                    else if (event.clientX >= left && event.clientX <= left + borderWidth) {
+                        event.target.style.cursor = 'w-resize';
+                    }
+                    else if (event.clientX >= right - borderWidth && event.clientX <= right) {
+                        event.target.style.cursor = 'e-resize';
+                    }
+                    else {
+                        event.target.style.cursor = 'auto';
+                    }
+                }
             }
         }
     });
