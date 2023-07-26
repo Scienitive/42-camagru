@@ -69,13 +69,14 @@ button:is(:has(small)) small {
 }
 
 .live-sticker {
-  width: 20%;
-  height: auto;
-  max-height: 100%;
   padding: 0;
   position: absolute;
-  border: 3px solid black;
+  border: 3px solid transparent;
   object-fit: contain;
+}
+
+.live-sticker:hover {
+  border-color: black;
 }
 
 .preview-image {
@@ -84,4 +85,15 @@ button:is(:has(small)) small {
   max-height: 25vh;
   object-fit: contain;
   cursor: pointer;
+}
+
+#live-sticker-container {
+  position: absolute;
+  z-index: 1;
+}
+
+.non-highlightable {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 }

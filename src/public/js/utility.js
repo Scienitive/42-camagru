@@ -70,3 +70,11 @@ export const alertModify = (alertElement, message, red = true) => {
         alertElement.classList.add('alert-success');
     }
 }
+
+export const pixelToPercentage = (px, parentSize) => {
+    return px * 100 / parentSize;
+}
+
+export const percentageToPixel = (percentage, parentSize) => {
+    return percentage * parentSize / 100;
+}
