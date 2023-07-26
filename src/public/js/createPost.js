@@ -1,3 +1,4 @@
+import { AJAXPost } from "./ajax.js";
 import { percentageToPixel, pixelToPercentage } from "./utility.js";
 
 export const setCreatePost = async () => {
@@ -28,10 +29,12 @@ export const setCreatePost = async () => {
             videoElement.srcObject = mediaStream;
             videoElement.classList.remove('d-none');
             noWebcamElement.classList.add('d-none');
+            captureButton.disabled = false;
         }
         catch (error) {
             videoElement.classList.add('d-none');
             noWebcamElement.classList.remove('d-none');
+            captureButton.disabled = true;
         }
     }
     await startWebcam();
@@ -378,5 +381,58 @@ export const setCreatePost = async () => {
             liveSticker.style.height = changeToPercentage(liveSticker.style.height, LSCheight);
         }
         setLiveStickerContainer(false);
+    });
+
+    // Sticker to Base64
+    const elementToBase64 = (imgElement) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = imgElement.naturalWidth;
+        canvas.height = imgElement.naturalHeight;
+
+        ctx.drawImage(imgElement, 0, 0);
+        const base64String = canvas.toDataURL();
+        canvas.remove();
+        return base64String;
+    }
+    const extractString = (base64String) => {
+        const parts = base64String.split(',');
+        if (parts.length === 2) {
+            return parts[1];
+        }
+        else {
+            return base64String;
+        }
+    }
+    // Post button
+    postButton.addEventListener('click', async () => {
+        const stickerInformation = [];
+        const liveStickers = mainContainer.querySelectorAll('.live-sticker');
+        for (const liveSticker of liveStickers) {
+            const stickerLeftPercentage = parseInt(changeToPercentage(liveSticker.style.left, LSCwidth)) > 100 ? '100%' : `${parseInt(changeToPercentage(liveSticker.style.left, LSCwidth))}%`;
+            const stickerLeftPixel = parseInt(changeToPixel(stickerLeftPercentage, LSCwidth));
+
+            const stickerTopPercentage = parseInt(changeToPercentage(liveSticker.style.top, LSCheight)) > 100 ? '100%' : `${parseInt(changeToPercentage(liveSticker.style.top, LSCheight))}%`;
+            const stickerTopPixel = parseInt(changeToPixel(stickerTopPercentage, LSCheight));
+
+            const stickerWidthPercentage = parseInt(changeToPercentage(liveSticker.style.width, LSCwidth)) > 100 ? '100%' : `${parseInt(changeToPercentage(liveSticker.style.width, LSCwidth))}%`;
+            const stickerWidthPixel = parseInt(changeToPixel(stickerWidthPercentage, LSCwidth));
+
+            const stickerHeightPercentage = parseInt(changeToPercentage(liveSticker.style.height, LSCheight)) > 100 ? '100%' : `${parseInt(changeToPercentage(liveSticker.style.height, LSCheight))}%`;
+            const stickerHeightPixel = parseInt(changeToPixel(stickerHeightPercentage, LSCheight));
+
+            stickerInformation.push({ image: extractString(elementToBase64(liveSticker)), x: stickerLeftPixel, y: stickerTopPixel, width: stickerWidthPixel, height: stickerHeightPixel });
+        }
+        const imageWidth = Math.floor((imageElement.offsetHeight * imageElement.naturalWidth) / imageElement.naturalHeight);
+        console.log({ baseImage: extractString(imageElement.src), width: imageWidth, stickerArray: stickerInformation })
+        const imageResponse = await AJAXPost("image.controller.php", { baseImage: extractString(imageElement.src), width: imageWidth, height: imageElement.height, stickerArray: JSON.stringify(stickerInformation) });
+        //console.log(await imageResponse.text());
+        if (imageResponse.ok) {
+            const blob = await imageResponse.blob();
+
+            const imageUrl = URL.createObjectURL(blob);
+            imageElement.src = imageUrl;
+        }
     });
 }

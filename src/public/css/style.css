@@ -72,7 +72,7 @@ button:is(:has(small)) small {
   padding: 0;
   position: absolute;
   border: 3px solid transparent;
-  object-fit: contain; /* This maybe not very good */
+  /* object-fit: contain; /* This maybe not very good */
 }
 
 .live-sticker:hover {
