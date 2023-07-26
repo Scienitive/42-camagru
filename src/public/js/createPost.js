@@ -14,6 +14,8 @@ export const setCreatePost = async () => {
     const mainContainer = document.getElementById('main-container');
     const stickerElements = document.getElementsByClassName('sticker');
     const liveStickerContainer = document.getElementById('live-sticker-container');
+    let LSCwidth;
+    let LSCheight;
     let mediaStream = null;
     let captureMode = true;
 
@@ -95,6 +97,8 @@ export const setCreatePost = async () => {
             liveStickerContainer.style.top = `${(mainContainer.offsetHeight - imageHeight) / 2}px`;
             liveStickerContainer.style.width = `${imageWidth}px`;
             liveStickerContainer.style.height = `${imageHeight}px`;
+            LSCwidth = imageWidth;
+            LSCheight = imageHeight;
         }
 
         if (wait) {
@@ -162,7 +166,7 @@ export const setCreatePost = async () => {
             newSticker.style.width = `20%`;
             newSticker.style.height = 'auto';
             setTimeout(() => {
-                newSticker.style.height = heightToPercentage(newSticker.style.height, newSticker.style.width, newSticker.naturalWidth / newSticker.naturalHeight, liveStickerContainer.offsetHeight, liveStickerContainer.offsetWidth);
+                newSticker.style.height = heightToPercentage(newSticker.style.height, newSticker.style.width, newSticker.naturalWidth / newSticker.naturalHeight, LSCheight, LSCwidth);
             }, 1);
             liveStickerContainer.appendChild(newSticker);
         });
@@ -238,9 +242,9 @@ export const setCreatePost = async () => {
                     currentLiveSticker.remove();
                 }
             }
-            else if (parseInt(currentLiveSticker.style.left) > liveStickerContainer.offsetWidth - currentLiveSticker.width) {
-                if (parseInt(currentLiveSticker.style.left) < liveStickerContainer.offsetWidth - currentLiveSticker.width + currentLiveSticker.width * destroyRatio) {
-                    currentLiveSticker.style.left = `${liveStickerContainer.offsetWidth - currentLiveSticker.width}px`;
+            else if (parseInt(currentLiveSticker.style.left) > LSCwidth - currentLiveSticker.width) {
+                if (parseInt(currentLiveSticker.style.left) < LSCwidth - currentLiveSticker.width + currentLiveSticker.width * destroyRatio) {
+                    currentLiveSticker.style.left = `${LSCwidth - currentLiveSticker.width}px`;
                 }
                 else {
                     currentLiveSticker.remove();
@@ -254,9 +258,9 @@ export const setCreatePost = async () => {
                     currentLiveSticker.remove();
                 }
             }
-            else if (parseInt(currentLiveSticker.style.top) > liveStickerContainer.offsetHeight - currentLiveSticker.height) {
-                if (parseInt(currentLiveSticker.style.top) < liveStickerContainer.offsetHeight - currentLiveSticker.height + currentLiveSticker.height * destroyRatio) {
-                    currentLiveSticker.style.top = `${liveStickerContainer.offsetHeight - currentLiveSticker.height}px`;
+            else if (parseInt(currentLiveSticker.style.top) > LSCheight - currentLiveSticker.height) {
+                if (parseInt(currentLiveSticker.style.top) < LSCheight - currentLiveSticker.height + currentLiveSticker.height * destroyRatio) {
+                    currentLiveSticker.style.top = `${LSCheight - currentLiveSticker.height}px`;
                 }
                 else {
                     currentLiveSticker.remove();
@@ -270,32 +274,64 @@ export const setCreatePost = async () => {
     window.addEventListener('mousemove', (event) => {
         if (!captureMode) {
             if (currentLiveSticker) {
+                const minumumWidth = 4; // Percentage (also Height)
                 const newX = prevX - event.clientX;
                 const newY = prevY - event.clientY;
 
                 // Moving the sticker
                 if (!resizeDirection) {
-                    currentLiveSticker.style.left = `${parseInt(changeToPixel(currentLiveSticker.style.left, liveStickerContainer.offsetWidth)) - newX}px`;
-                    currentLiveSticker.style.top = `${parseInt(changeToPixel(currentLiveSticker.style.top, liveStickerContainer.offsetHeight)) - newY}px`;
+                    currentLiveSticker.style.left = `${parseInt(changeToPixel(currentLiveSticker.style.left, LSCwidth)) - newX}px`;
+                    currentLiveSticker.style.top = `${parseInt(changeToPixel(currentLiveSticker.style.top, LSCheight)) - newY}px`;
                 }
 
                 // Resizing the sticker
                 else if (resizeDirection === 'right') {
-                    currentLiveSticker.style.width = `${parseInt(changeToPixel(currentLiveSticker.style.width, liveStickerContainer.offsetWidth)) - newX}px`;
-                    //if () // Resize COntrols
+                    const oldWidth = currentLiveSticker.style.width;
+                    currentLiveSticker.style.width = `${parseInt(changeToPixel(currentLiveSticker.style.width, LSCwidth)) - newX}px`;
+                    if (parseInt(changeToPixel(currentLiveSticker.style.left)) > LSCwidth - parseInt(currentLiveSticker.width)) {
+                        currentLiveSticker.style.width = oldWidth;
+                    }
+                    if (parseInt(changeToPercentage(currentLiveSticker.style.width, LSCwidth)) < minumumWidth) {
+                        currentLiveSticker.style.width = oldWidth;
+                    }
                 }
                 else if (resizeDirection === 'left') {
-                    currentLiveSticker.style.width = `${parseInt(changeToPixel(currentLiveSticker.style.width, liveStickerContainer.offsetWidth)) + newX}px`;
-                    currentLiveSticker.style.left = `${parseInt(changeToPixel(currentLiveSticker.style.left, liveStickerContainer.offsetWidth)) - newX}px`;
+                    const oldWidth = currentLiveSticker.style.width;
+                    const oldLeft = currentLiveSticker.style.left;
+                    currentLiveSticker.style.width = `${parseInt(changeToPixel(currentLiveSticker.style.width, LSCwidth)) + newX}px`;
+                    currentLiveSticker.style.left = `${parseInt(changeToPixel(currentLiveSticker.style.left, LSCwidth)) - newX}px`;
+                    if (parseInt(changeToPixel(currentLiveSticker.style.left)) < 0) {
+                        currentLiveSticker.style.width = oldWidth;
+                        currentLiveSticker.style.left = oldLeft;
+                    }
+                    if (parseInt(changeToPercentage(currentLiveSticker.style.width, LSCwidth)) < minumumWidth) {
+                        currentLiveSticker.style.width = oldWidth;
+                        currentLiveSticker.style.left = oldLeft;
+                    }
                 }
                 else if (resizeDirection === 'bottom') {
-                    const ap = currentLiveSticker.naturalWidth / currentLiveSticker.naturalHeight;
-                    currentLiveSticker.style.height = `${parseInt(heightToPixel(currentLiveSticker.style.height, currentLiveSticker.style.width, ap, liveStickerContainer.offsetHeight, liveStickerContainer.offsetWidth)) - newY}px`;
+                    const oldHeight = currentLiveSticker.style.height;
+                    currentLiveSticker.style.height = `${parseInt(changeToPixel(currentLiveSticker.style.height, LSCheight)) - newY}px`;
+                    if (parseInt(changeToPixel(currentLiveSticker.style.top)) > LSCheight - parseInt(currentLiveSticker.height)) {
+                        currentLiveSticker.style.height = oldHeight;
+                    }
+                    if (parseInt(changeToPercentage(currentLiveSticker.style.height, LSCheight)) < minumumWidth) {
+                        currentLiveSticker.style.height = oldHeight;
+                    }
                 }
                 else if (resizeDirection === 'top') {
-                    const ap = currentLiveSticker.naturalWidth / currentLiveSticker.naturalHeight;
-                    currentLiveSticker.style.height = `${parseInt(heightToPixel(currentLiveSticker.style.height, currentLiveSticker.style.width, ap, liveStickerContainer.offsetHeight, liveStickerContainer.offsetWidth)) + newY}px`;
-                    currentLiveSticker.style.top = `${parseInt(changeToPixel(currentLiveSticker.style.top, liveStickerContainer.offsetWidth)) - newY}px`;
+                    const oldHeight = currentLiveSticker.style.height;
+                    const oldTop = currentLiveSticker.style.top;
+                    currentLiveSticker.style.height = `${parseInt(changeToPixel(currentLiveSticker.style.height, LSCheight)) + newY}px`;
+                    currentLiveSticker.style.top = `${parseInt(changeToPixel(currentLiveSticker.style.top, LSCwidth)) - newY}px`;
+                    if (parseInt(changeToPixel(currentLiveSticker.style.top)) < 0) {
+                        currentLiveSticker.style.height = oldHeight;
+                        currentLiveSticker.style.top = oldTop;
+                    }
+                    if (parseInt(changeToPercentage(currentLiveSticker.style.height, LSCheight)) < minumumWidth) {
+                        currentLiveSticker.style.height = oldHeight;
+                        currentLiveSticker.style.top = oldTop;
+                    }
                 }
 
                 prevX = event.clientX;
@@ -305,13 +341,13 @@ export const setCreatePost = async () => {
             // Cursor Changes
             if (event.target.classList.contains('live-sticker')) {
                 if (!resizeDirection) {
-                const { left, top, right, bottom } = event.target.getBoundingClientRect();
-                const ap = event.target.naturalWidth / event.target.naturalHeight;
-                const borderRatio = 5/100;
-                let borderWidth = Math.floor(parseInt(changeToPixel(event.target.style.width, liveStickerContainer.offsetWidth)) * borderRatio);
-                let borderHeight = Math.floor(parseInt(heightToPixel(event.target.style.height, event.target.style.width, ap, liveStickerContainer.offsetHeight, liveStickerContainer.offsetWidth)) * borderRatio);
-                if (borderHeight < 2) {borderHeight = 2;}
-                if (borderWidth < 2) {borderWidth = 2;}
+                    const { left, top, right, bottom } = event.target.getBoundingClientRect();
+                    const borderRatio = 5/100;
+                    let borderWidth = Math.floor(parseInt(changeToPixel(event.target.style.width, LSCwidth)) * borderRatio);
+                    let borderHeight = Math.floor(parseInt(changeToPixel(event.target.style.height, LSCheight)) * borderRatio);
+                    console.log(event.target.style.width);
+                    if (borderHeight < 2) {borderHeight = 2;}
+                    if (borderWidth < 2) {borderWidth = 2;}
 
                     if (event.clientY >= top && event.clientY <= top + borderHeight) {
                         event.target.style.cursor = 'n-resize';
@@ -334,13 +370,13 @@ export const setCreatePost = async () => {
     });
 
     window.addEventListener('resize', () => {
-        if (!captureMode) {
-            setLiveStickerContainer(false);
-        }
         const liveStickers = mainContainer.querySelectorAll('.live-sticker');
         for (const liveSticker of liveStickers) {
-            liveSticker.style.left = changeToPercentage(liveSticker.style.left, liveStickerContainer.offsetWidth);
-            liveSticker.style.top = changeToPercentage(liveSticker.style.top, liveStickerContainer.offsetHeight);
+            liveSticker.style.left = changeToPercentage(liveSticker.style.left, LSCwidth);
+            liveSticker.style.top = changeToPercentage(liveSticker.style.top, LSCheight);
+            liveSticker.style.width = changeToPercentage(liveSticker.style.width, LSCwidth);
+            liveSticker.style.height = changeToPercentage(liveSticker.style.height, LSCheight);
         }
+        setLiveStickerContainer(false);
     });
 }
