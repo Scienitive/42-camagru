@@ -107,7 +107,7 @@ const urlRoute = (event) => {
     
 };
 
-const urlLocationHandler = async (pathname, reload = false) => {
+const urlLocationHandler = async (pathname) => {
     let location;
     if (typeof(pathname) != "object") { // If it hasn't come from window.onpopstate
         location = pathname || window.location.pathname;
