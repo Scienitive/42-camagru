@@ -1,44 +1,65 @@
 <?php
+try {
+    // Base Image
+    $baseImage = imagecreatefromstring(base64_decode($_POST['baseImage']));
 
-$stickers = json_decode($_POST['stickerArray']);
+    $baseWidth = imagesx($baseImage);
+    $baseHeight = imagesy($baseImage);
+    $baseNewHeight = $_POST['height'];
+    $baseNewWidth = (int) ($baseWidth * ($baseNewHeight / $baseHeight));
 
-$base_image = imagecreatefromstring(base64_decode($_POST['baseImage']));
-$img = imagecreatefromstring(base64_decode($stickers[0]->image));
+    $mergedImage = imagecreatetruecolor($baseNewWidth, $baseNewHeight);
 
-$baseWidth = imagesx($base_image);
-$baseHeight = imagesy($base_image);
-$baseNewHeight = $_POST['height'];
-$baseNewWidth = (int) ($baseWidth * ($baseNewHeight / $baseHeight));
+    imagealphablending($mergedImage, false);
+    imagesavealpha($mergedImage, true);
 
-$secondWidth = imagesx($img);
-$secondHeight = imagesy($img);
-$secondNewWidth = $stickers[0]->width;
-//$secondNewHeight = (int) ($secondHeight * ($secondNewWidth / $secondWidth));
-$secondNewHeight = $stickers[0]->height;
+    $resizedBaseImage = imagecreatetruecolor($baseNewWidth, $baseNewHeight);
 
-$resizedBaseImage = imagecreatetruecolor($baseNewWidth, $baseNewHeight);
-$resizedSecondImage = imagecreatetruecolor($secondNewWidth, $secondNewHeight);
+    imagealphablending($resizedBaseImage, false);
+    imagesavealpha($resizedBaseImage, true);
 
-imagealphablending($resizedSecondImage, false);
-imagesavealpha($resizedSecondImage, true);
+    imagecopyresampled($resizedBaseImage, $baseImage, 0, 0, 0, 0, $baseNewWidth, $baseNewHeight, $baseWidth, $baseHeight);
 
-imagecopyresampled($resizedBaseImage, $base_image, 0, 0, 0, 0, $baseNewWidth, $baseNewHeight, $baseWidth, $baseHeight);
-imagecopyresampled($resizedSecondImage, $img, 0, 0, 0, 0, $secondNewWidth, $secondNewHeight, $secondWidth, $secondHeight);
+    imagecopy($mergedImage, $resizedBaseImage, 0, 0, 0, 0, $baseNewWidth, $baseNewHeight);
+    imagealphablending($mergedImage, true);
 
-//$black = imagecolorallocate($resizedBaseImage, 0, 0, 0);
-//imagecolortransparent($resizedBaseImage, $black);
-imagecopy($resizedBaseImage, $resizedSecondImage, $stickers[0]->x, $stickers[0]->y, 0, 0, $secondNewWidth, $secondNewHeight);
+    // Stickers
+    $stickers = json_decode($_POST['stickerArray']);
 
-//$dst_image = imagecreatetruecolor(imagesx($base_image), imagesy($base_image));
+    foreach ($stickers as $sticker) {
+        $stickerImage = imagecreatefromstring(base64_decode($sticker->image));
 
-//imagecopy($dst_image, $base_image, 0, 0, 0, 0, imagesx($base_image), imagesy($base_image));
-//imagecopy($dst_image, $img, 0, 0, 0, 0, imagesx($img), imagesy($img));
-//imagecopyresampled($base_image, $img, 0, 0, $stickers[0]->x, $stickers[0]->y, $_POST['width'], $_POST['height'], $stickers[0]->width, $stickers[0]->height);
+        $stickerWidth = imagesx($stickerImage);
+        $stickerHeight = imagesy($stickerImage);
+        $stickerNewWidth = $sticker->width;
+        $stickerNewHeight = $sticker->height;
 
-header('Content-Type: image/png');
-//imagealphablending($resizedBaseImage, false); 
-//imagesavealpha($resizedBaseImage,true);
-imagepng($resizedBaseImage);
+        $resizedStickerImage = imagecreatetruecolor($stickerNewWidth, $stickerNewHeight);
 
+        imagealphablending($resizedStickerImage, false);
+        imagesavealpha($resizedStickerImage, true);
+
+        imagecopyresampled($resizedStickerImage, $stickerImage, 0, 0, 0, 0, $stickerNewWidth, $stickerNewHeight, $stickerWidth, $stickerHeight);
+
+        imagecopy($mergedImage, $resizedStickerImage, $sticker->x, $sticker->y, 0, 0, $stickerNewWidth, $stickerNewHeight);
+    }
+
+    $basePath = __DIR__ . '/../../../public/uploads/';
+    $fileName = $_POST['userId'] . '.png';
+    $index = 1;
+
+    while (file_exists($basePath . $fileName)) {
+        $fileName = $_POST['userId'] . '_' . $index . '.png';
+        $index++;
+    }
+
+    header('Content-Type: image/png');
+    imagepng($mergedImage, $basePath . $fileName);
+    echo $fileName;
+}
+catch (Exception $e) {
+    http_response_code(500); // 500 Internal Server Error
+    echo "Error: " . $e->getMessage();
+}
 exit;
 ?>

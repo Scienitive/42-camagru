@@ -1,4 +1,4 @@
-import { AJAXPost } from "./ajax.js";
+import { AJAXPost, AJAXGet } from "./ajax.js";
 import { percentageToPixel, pixelToPercentage } from "./utility.js";
 
 export const setCreatePost = async () => {
@@ -410,6 +410,7 @@ export const setCreatePost = async () => {
         const stickerInformation = [];
         const liveStickers = mainContainer.querySelectorAll('.live-sticker');
         const rectContainer = liveStickerContainer.getBoundingClientRect();
+
         for (const liveSticker of liveStickers) {
             const rect = liveSticker.getBoundingClientRect();
             const stickerLeftPixel = Math.floor(rect.left - rectContainer.left);
@@ -419,14 +420,14 @@ export const setCreatePost = async () => {
 
             stickerInformation.push({ image: extractString(elementToBase64(liveSticker)), x: stickerLeftPixel, y: stickerTopPixel, width: stickerWidthPixel, height: stickerHeightPixel });
         }
-        console.log({ baseImage: extractString(imageElement.src), height: imageElement.offsetHeight, stickerArray: stickerInformation })
-        const imageResponse = await AJAXPost("image.controller.php", { baseImage: extractString(imageElement.src), height: imageElement.offsetHeight, stickerArray: JSON.stringify(stickerInformation) });
-        //console.log(await imageResponse.text());
-        if (imageResponse.ok) {
-            const blob = await imageResponse.blob();
 
-            const imageUrl = URL.createObjectURL(blob);
-            imageElement.src = imageUrl;
+        const session = await (await AJAXGet("current-session.php")).json();
+        const imageResponse = await AJAXPost("image.controller.php", { userId: session['user-id'], baseImage: extractString(imageElement.src), height: imageElement.offsetHeight, stickerArray: JSON.stringify(stickerInformation) });
+        if (imageResponse.ok) {
+            console.log(await imageResponse.text());
+        }
+        else {
+            console.log(await imageResponse.text());
         }
     });
 }
