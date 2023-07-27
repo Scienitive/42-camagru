@@ -409,24 +409,18 @@ export const setCreatePost = async () => {
     postButton.addEventListener('click', async () => {
         const stickerInformation = [];
         const liveStickers = mainContainer.querySelectorAll('.live-sticker');
+        const rectContainer = liveStickerContainer.getBoundingClientRect();
         for (const liveSticker of liveStickers) {
-            const stickerLeftPercentage = parseInt(changeToPercentage(liveSticker.style.left, LSCwidth)) > 100 ? '100%' : `${parseInt(changeToPercentage(liveSticker.style.left, LSCwidth))}%`;
-            const stickerLeftPixel = parseInt(changeToPixel(stickerLeftPercentage, LSCwidth));
-
-            const stickerTopPercentage = parseInt(changeToPercentage(liveSticker.style.top, LSCheight)) > 100 ? '100%' : `${parseInt(changeToPercentage(liveSticker.style.top, LSCheight))}%`;
-            const stickerTopPixel = parseInt(changeToPixel(stickerTopPercentage, LSCheight));
-
-            const stickerWidthPercentage = parseInt(changeToPercentage(liveSticker.style.width, LSCwidth)) > 100 ? '100%' : `${parseInt(changeToPercentage(liveSticker.style.width, LSCwidth))}%`;
-            const stickerWidthPixel = parseInt(changeToPixel(stickerWidthPercentage, LSCwidth));
-
-            const stickerHeightPercentage = parseInt(changeToPercentage(liveSticker.style.height, LSCheight)) > 100 ? '100%' : `${parseInt(changeToPercentage(liveSticker.style.height, LSCheight))}%`;
-            const stickerHeightPixel = parseInt(changeToPixel(stickerHeightPercentage, LSCheight));
+            const rect = liveSticker.getBoundingClientRect();
+            const stickerLeftPixel = Math.floor(rect.left - rectContainer.left);
+            const stickerTopPixel = Math.floor(rect.top - rectContainer.top);
+            const stickerWidthPixel = Math.floor(rect.width);
+            const stickerHeightPixel = Math.floor(rect.height);
 
             stickerInformation.push({ image: extractString(elementToBase64(liveSticker)), x: stickerLeftPixel, y: stickerTopPixel, width: stickerWidthPixel, height: stickerHeightPixel });
         }
-        const imageWidth = Math.floor((imageElement.offsetHeight * imageElement.naturalWidth) / imageElement.naturalHeight);
-        console.log({ baseImage: extractString(imageElement.src), width: imageWidth, stickerArray: stickerInformation })
-        const imageResponse = await AJAXPost("image.controller.php", { baseImage: extractString(imageElement.src), width: imageWidth, height: imageElement.height, stickerArray: JSON.stringify(stickerInformation) });
+        console.log({ baseImage: extractString(imageElement.src), height: imageElement.offsetHeight, stickerArray: stickerInformation })
+        const imageResponse = await AJAXPost("image.controller.php", { baseImage: extractString(imageElement.src), height: imageElement.offsetHeight, stickerArray: JSON.stringify(stickerInformation) });
         //console.log(await imageResponse.text());
         if (imageResponse.ok) {
             const blob = await imageResponse.blob();

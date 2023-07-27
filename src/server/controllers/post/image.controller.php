@@ -7,8 +7,8 @@ $img = imagecreatefromstring(base64_decode($stickers[0]->image));
 
 $baseWidth = imagesx($base_image);
 $baseHeight = imagesy($base_image);
-$baseNewWidth = $_POST['width'];
-$baseNewHeight = (int) ($baseHeight * ($baseNewWidth / $baseWidth));
+$baseNewHeight = $_POST['height'];
+$baseNewWidth = (int) ($baseWidth * ($baseNewHeight / $baseHeight));
 
 $secondWidth = imagesx($img);
 $secondHeight = imagesy($img);
