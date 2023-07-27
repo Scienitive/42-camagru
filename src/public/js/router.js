@@ -96,7 +96,7 @@ const urlRoute = (event) => {
     const url = new URL(absoluteURL);
     const relativePath = url.pathname.length > 0 ? url.pathname : "/";
     if (relativePath === window.location.pathname) {
-        window.location.reload();
+        window.location.replace(window.location.pathname);
     }
     else if (relativePath === '/create-post') {
         window.location.replace('/create-post');
