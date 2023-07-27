@@ -277,7 +277,7 @@ export const afterPageLoad = async (location) => {
 
     if (location === '/') {
         const container = document.getElementById('main-posts');
-        await loadPosts(container);
+        await loadPosts(container, true);
     }
     else if (location === '/verify') {
         const urlParams = new URLSearchParams(window.location.search);

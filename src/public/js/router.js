@@ -75,6 +75,12 @@ const urlRoutes = {
         title: "Camagru | New Post",
         headerLink: "home.html",
         mainLink: "create-post.html"
+    },
+    "/post-successful": {
+        name: "/post-successful",
+        title: "Camagru | New Post",
+        headerLink: "home.html",
+        mainLink: "post-successful.html"
     }
 };
 
@@ -136,6 +142,9 @@ const changeRoute = async (route) => {
     }
     else if (route.name === "/settings") {
         route = session.hasOwnProperty('user-id') ? urlRoutes["/settings"] : urlRoutes["/404"];
+    }
+    else if (route.name === "/create-post") {
+        route = session.hasOwnProperty('user-id') ? urlRoutes["/create-post"] : urlRoutes["/404"];
     }
 
     return route;

@@ -48,6 +48,12 @@ try {
     $fileName = $_POST['userId'] . '.png';
     $index = 1;
 
+    if (!is_dir($basePath)) {
+        if (!mkdir($basePath)) {
+            http_response_code(500);
+        }
+    }
+
     while (file_exists($basePath . $fileName)) {
         $fileName = $_POST['userId'] . '_' . $index . '.png';
         $index++;

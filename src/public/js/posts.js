@@ -3,8 +3,11 @@ import { convertStringToElement } from "./utility.js";
 
 let lastPostId = null;
 
-export const loadPosts = async (container) => {
+export const loadPosts = async (container, reset = false) => {
     let posts;
+    if (reset) {
+        lastPostId = null;
+    }
     if (lastPostId != null) {
         posts = Object.values(await (await AJAXGet("post.controller.php", { lastPostId: lastPostId })).json());
     }

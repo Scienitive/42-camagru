@@ -424,10 +424,15 @@ export const setCreatePost = async () => {
         const session = await (await AJAXGet("current-session.php")).json();
         const imageResponse = await AJAXPost("image.controller.php", { userId: session['user-id'], baseImage: extractString(imageElement.src), height: imageElement.offsetHeight, stickerArray: JSON.stringify(stickerInformation) });
         if (imageResponse.ok) {
-            console.log(await imageResponse.text());
-        }
-        else {
-            console.log(await imageResponse.text());
+            const imageFileName = await imageResponse.text();
+            console.log(imageFileName);
+            const postResponse = await AJAXPost("post.controller.php", { userId: session['user-id'], imageFileName: `/public/uploads/${imageFileName}` });
+            if (postResponse.ok) {
+                window.location.replace("/post-successful");
+            }
+            else {
+                console.log(await postResponse.text());
+            }
         }
     });
 }
