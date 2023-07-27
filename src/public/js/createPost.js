@@ -25,6 +25,8 @@ export const setCreatePost = async () => {
     const uploadButton = document.getElementById('upload-button');
     const postButton = document.getElementById('post-button');
     const cancelButton = document.getElementById('cancel-button');
+    const saveButton = document.getElementById('save-button');
+    const middleCol = document.getElementById('middle-col');
     const stickerContainer = document.getElementById('sticker-container');
     const previewContainer = document.getElementById('preview-container');
     const mainContainer = document.getElementById('main-container');
@@ -64,7 +66,8 @@ export const setCreatePost = async () => {
             captureButton.classList.remove('d-none');
             uploadButton.classList.remove('d-none');
             postButton.classList.add('d-none');
-            cancelButton.classList.add('d-none');
+            middleCol.classList.add('d-none');
+            saveButton.classList.add('d-none');
             previewContainer.classList.remove('d-none');
             stickerContainer.classList.add('d-none');
             postButton.disabled = true;
@@ -74,9 +77,12 @@ export const setCreatePost = async () => {
             captureButton.classList.add('d-none');
             uploadButton.classList.add('d-none');
             postButton.classList.remove('d-none');
-            cancelButton.classList.remove('d-none');
+            middleCol.classList.remove('d-none');
+            saveButton.classList.remove('d-none');
             previewContainer.classList.add('d-none');
             stickerContainer.classList.remove('d-none');
+            saveButton.disabled = false;
+            cancelButton.disabled = false;
         }
     }
 
@@ -150,7 +156,36 @@ export const setCreatePost = async () => {
 
     cancelButton.addEventListener('click', async () => {
         postButton.disabled = true;
+        saveButton.disabled = true;
+        cancelButton.disabled = true;
         await changeMode();
+    });
+
+    saveButton.addEventListener('click', async () => {
+        const stickerInformation = [];
+        const liveStickers = mainContainer.querySelectorAll('.live-sticker');
+        const rectContainer = liveStickerContainer.getBoundingClientRect();
+
+        for (const liveSticker of liveStickers) {
+            const rect = liveSticker.getBoundingClientRect();
+            const stickerLeftPixel = Math.floor(rect.left - rectContainer.left);
+            const stickerTopPixel = Math.floor(rect.top - rectContainer.top);
+            const stickerWidthPixel = Math.floor(rect.width);
+            const stickerHeightPixel = Math.floor(rect.height);
+
+            stickerInformation.push({ image: extractString(elementToBase64(liveSticker)), x: stickerLeftPixel, y: stickerTopPixel, width: stickerWidthPixel, height: stickerHeightPixel });
+        }
+
+        const imageResponse = await AJAXPost("image-download.controller.php", { baseImage: extractString(imageElement.src), height: imageElement.offsetHeight, stickerArray: JSON.stringify(stickerInformation) });
+        if (imageResponse.ok) {
+            const blob = await imageResponse.blob();
+            const imageUrl = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = imageUrl;
+            anchor.download = "camagru.png";
+            anchor.click();
+            anchor.remove();
+        }
     });
 
     document.addEventListener('click', async (event) => {
