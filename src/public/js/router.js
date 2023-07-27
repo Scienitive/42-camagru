@@ -81,6 +81,12 @@ const urlRoutes = {
         title: "Camagru | New Post",
         headerLink: "home.html",
         mainLink: "post-successful.html"
+    },
+    "/post-unsuccessful": {
+        name: "/post-unsuccessful",
+        title: "Camagru | New Post",
+        headerLink: "home.html",
+        mainLink: "post-unsuccessful.html"
     }
 };
 
@@ -91,6 +97,9 @@ const urlRoute = (event) => {
     const relativePath = url.pathname.length > 0 ? url.pathname : "/";
     if (relativePath === window.location.pathname) {
         window.location.reload();
+    }
+    else if (relativePath === '/create-post') {
+        window.location.replace('/create-post');
     }
     else {
         urlLocationHandler(relativePath);

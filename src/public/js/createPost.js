@@ -1,6 +1,21 @@
 import { AJAXPost, AJAXGet } from "./ajax.js";
 import { percentageToPixel, pixelToPercentage } from "./utility.js";
 
+let mediaStream = null;
+
+export const stopWebcam = (videoElement, noWebcamElement, imageElement, liveStickerContainer) => {
+    if (mediaStream !== null) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+    }
+    if (videoElement !== undefined) {
+        videoElement.classList.add('d-none');
+        noWebcamElement.classList.add('d-none');
+        imageElement.classList.remove('d-none');
+        liveStickerContainer.classList.remove('d-none');
+    }
+}
+
 export const setCreatePost = async () => {
     const videoElement = document.getElementById('webcam');
     const noWebcamElement = document.getElementById('no-webcam');
@@ -17,7 +32,6 @@ export const setCreatePost = async () => {
     const liveStickerContainer = document.getElementById('live-sticker-container');
     let LSCwidth;
     let LSCheight;
-    let mediaStream = null;
     let captureMode = true;
 
     const startWebcam = async () => { // USE WITH AWAIT
@@ -39,17 +53,6 @@ export const setCreatePost = async () => {
     }
     await startWebcam();
 
-    const stopWebcam = () => {
-        if (mediaStream !== null) {
-            mediaStream.getTracks().forEach(track => track.stop());
-            mediaStream = null;
-        }
-        videoElement.classList.add('d-none');
-        noWebcamElement.classList.add('d-none');
-        imageElement.classList.remove('d-none');
-        liveStickerContainer.classList.remove('d-none');
-    }
-
     const changeMode = async () => { // USE WITH AWAIT
         captureMode = !captureMode;
         if (captureMode) {
@@ -64,9 +67,10 @@ export const setCreatePost = async () => {
             cancelButton.classList.add('d-none');
             previewContainer.classList.remove('d-none');
             stickerContainer.classList.add('d-none');
+            postButton.disabled = true;
         }
         else {
-            stopWebcam();
+            stopWebcam(videoElement, noWebcamElement, imageElement, liveStickerContainer);
             captureButton.classList.add('d-none');
             uploadButton.classList.add('d-none');
             postButton.classList.remove('d-none');
@@ -145,6 +149,7 @@ export const setCreatePost = async () => {
     });
 
     cancelButton.addEventListener('click', async () => {
+        postButton.disabled = true;
         await changeMode();
     });
 
@@ -172,6 +177,7 @@ export const setCreatePost = async () => {
                 newSticker.style.height = heightToPercentage(newSticker.style.height, newSticker.style.width, newSticker.naturalWidth / newSticker.naturalHeight, LSCheight, LSCwidth);
             }, 1);
             liveStickerContainer.appendChild(newSticker);
+            postButton.disabled = false;
         });
     }
 
@@ -236,12 +242,17 @@ export const setCreatePost = async () => {
 
     document.addEventListener('mouseup', () => {
         if (currentLiveSticker) {
+            const liveStickers = mainContainer.querySelectorAll('.live-sticker');
+            console.log(liveStickers.length);
             const destroyRatio = 2 / 3;
             if (parseInt(currentLiveSticker.style.left) < 0) {
                 if (parseInt(currentLiveSticker.style.left) > 0 - currentLiveSticker.width * destroyRatio) {
                     currentLiveSticker.style.left = `0px`;
                 }
                 else {
+                    if (liveStickers.length === 1) {
+                        postButton.disabled = true;
+                    }
                     currentLiveSticker.remove();
                 }
             }
@@ -250,6 +261,9 @@ export const setCreatePost = async () => {
                     currentLiveSticker.style.left = `${LSCwidth - currentLiveSticker.width}px`;
                 }
                 else {
+                    if (liveStickers.length === 1) {
+                        postButton.disabled = true;
+                    }
                     currentLiveSticker.remove();
                 }
             }
@@ -258,6 +272,9 @@ export const setCreatePost = async () => {
                     currentLiveSticker.style.top = `0px`;
                 }
                 else {
+                    if (liveStickers.length === 1) {
+                        postButton.disabled = true;
+                    }
                     currentLiveSticker.remove();
                 }
             }
@@ -266,6 +283,9 @@ export const setCreatePost = async () => {
                     currentLiveSticker.style.top = `${LSCheight - currentLiveSticker.height}px`;
                 }
                 else {
+                    if (liveStickers.length === 1) {
+                        postButton.disabled = true;
+                    }
                     currentLiveSticker.remove();
                 }
             }

@@ -1,5 +1,5 @@
 import { AJAXDelete, AJAXGet, AJAXGetHTML, AJAXPost } from "./ajax.js";
-import { setCreatePost } from "./createPost.js";
+import { setCreatePost, stopWebcam } from "./createPost.js";
 import { loadComments, loadPosts } from "./posts.js";
 import { setSettings } from "./settings.js";
 import { buttonLoadingOff, buttonLoadingOn, createNewToken, createNewTokenFromOldToken, convertStringToElement } from "./utility.js";
@@ -278,6 +278,7 @@ export const afterPageLoad = async (location) => {
     if (location === '/') {
         const container = document.getElementById('main-posts');
         await loadPosts(container, true);
+        stopWebcam();
     }
     else if (location === '/verify') {
         const urlParams = new URLSearchParams(window.location.search);
@@ -325,6 +326,7 @@ export const afterPageLoad = async (location) => {
         }
 
         await setSettings();
+        stopWebcam();
     }
     else if (location === '/create-post') {
         await setCreatePost();

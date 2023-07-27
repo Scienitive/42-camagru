@@ -39,18 +39,18 @@
         </div>
     </div>
     <div class="row justify-content-start">
-        <div class="col-9">
+        <div class="col-sm-9">
             <div class="card bg-dark text-white" style="border-radius: 1rem;">
                 <div class="container">
-                    <div class="row">
-                        <div class="col">
-                            <button id="capture-button" class="btn btn-primary">Capture</button>
-                            <button id="post-button" class="btn btn-primary d-none">Post</button>
+                    <div class="row justify-content-center">
+                        <div class="col-sm-3 d-flex justify-content-center">
+                            <button id="capture-button" class="btn btn-success my-2">Capture</button>
+                            <button id="post-button" class="btn btn-success d-none my-2" disabled>Post</button>
                         </div>
-                        <div class="col">
+                        <div class="col-sm-3 d-flex justify-content-center">
                             <input type="file" id="image-input" class="d-none" accept=".jpg, .jpeg, .png">
-                            <button id="upload-button" class="btn btn-primary">Upload</button>
-                            <button id="cancel-button" class="btn btn-primary d-none">Cancel</button>
+                            <button id="upload-button" class="btn btn-primary my-2">Upload</button>
+                            <button id="cancel-button" class="btn btn-danger d-none my-2">Cancel</button>
                         </div>
                     </div>
                 </div>
