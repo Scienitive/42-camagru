@@ -3,16 +3,26 @@ import { convertStringToElement } from "./utility.js";
 
 let lastPostId = null;
 
-export const loadPosts = async (container, reset = false) => {
+export const loadPosts = async (container, userId, reset = false) => {
     let posts;
     if (reset) {
         lastPostId = null;
     }
     if (lastPostId != null) {
-        posts = Object.values(await (await AJAXGet("post.controller.php", { lastPostId: lastPostId })).json());
+        if (userId) {
+            posts = Object.values(await (await AJAXGet("post.controller.php", { lastPostId: lastPostId, userId: userId })).json());
+        }
+        else {
+            posts = Object.values(await (await AJAXGet("post.controller.php", { lastPostId: lastPostId })).json());
+        }
     }
     else {
-        posts = Object.values(await (await AJAXGet("post.controller.php")).json());
+        if (userId) {
+            posts = Object.values(await (await AJAXGet("post.controller.php", { userId: userId })).json());
+        }
+        else {
+            posts = Object.values(await (await AJAXGet("post.controller.php")).json());
+        }
     }
 
     if (posts.length <= 0) {return;}

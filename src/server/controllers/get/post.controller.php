@@ -3,7 +3,18 @@
 $pdo = require(__DIR__ . "/../../models/database.php");
 
 if (isset($_GET['lastPostId'])) {
-    $sql = "SELECT posts.*, users.username, COUNT(likes.id) AS like_count
+    if (isset($_GET['userId'])) {
+        $sql = "SELECT posts.*, users.username, COUNT(likes.id) AS like_count
+            FROM posts
+            JOIN users ON posts.user_id = users.id
+            LEFT JOIN likes ON posts.id = likes.post_id
+            WHERE posts.id < ? AND posts.user_id = ?
+            GROUP BY posts.id, users.username
+            ORDER BY posts.id DESC
+            LIMIT 3";
+    }
+    else {
+        $sql = "SELECT posts.*, users.username, COUNT(likes.id) AS like_count
             FROM posts
             JOIN users ON posts.user_id = users.id
             LEFT JOIN likes ON posts.id = likes.post_id
@@ -11,24 +22,47 @@ if (isset($_GET['lastPostId'])) {
             GROUP BY posts.id, users.username
             ORDER BY posts.id DESC
             LIMIT 3";
+    }
 }
 else {
-    $sql = "SELECT posts.*, users.username, COUNT(likes.id) AS like_count
+    if (isset($_GET['userId'])) {
+        $sql = "SELECT posts.*, users.username, COUNT(likes.id) AS like_count
+            FROM posts
+            JOIN users ON posts.user_id = users.id
+            LEFT JOIN likes ON posts.id = likes.post_id
+            WHERE posts.user_id = ?
+            GROUP BY posts.id, users.username
+            ORDER BY posts.id DESC
+            LIMIT 3";
+    }
+    else {
+        $sql = "SELECT posts.*, users.username, COUNT(likes.id) AS like_count
             FROM posts
             JOIN users ON posts.user_id = users.id
             LEFT JOIN likes ON posts.id = likes.post_id
             GROUP BY posts.id, users.username
             ORDER BY posts.id DESC
             LIMIT 3";
+    }
 }
 
 try {
     $stmt = $pdo->prepare($sql);
     if (isset($_GET['lastPostId'])) {
-        $stmt->execute([$_GET['lastPostId']]);
+        if (isset($_GET['userId'])) {
+            $stmt->execute([$_GET['lastPostId'], $_GET['userId']]);
+        }
+        else {
+            $stmt->execute([$_GET['lastPostId']]);
+        }
     }
     else {
-        $stmt->execute();
+        if (isset($_GET['userId'])) {
+            $stmt->execute([$_GET['userId']]);
+        }
+        else {
+            $stmt->execute();
+        }
     }
     $result = $stmt->fetchAll();
     header('Content-Type: application/json');

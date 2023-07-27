@@ -276,8 +276,9 @@ export const afterPageLoad = async (location) => {
     }
 
     if (location === '/') {
+        const urlParams = new URLSearchParams(window.location.search);
         const container = document.getElementById('main-posts');
-        await loadPosts(container, true);
+        await loadPosts(container, urlParams.get('user'), true);
         stopWebcam();
     }
     else if (location === '/verify') {
