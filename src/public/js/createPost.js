@@ -27,14 +27,25 @@ export const setCreatePost = async () => {
     const cancelButton = document.getElementById('cancel-button');
     const saveButton = document.getElementById('save-button');
     const middleCol = document.getElementById('middle-col');
-    const stickerContainer = document.getElementById('sticker-container');
-    const previewContainer = document.getElementById('preview-container');
+    const stickerContainerAbove = document.getElementById('sticker-container-above');
+    const stickerContainerVertical = document.getElementById('sticker-container');
+    const stickerContainerHorizontal = document.getElementById('sticker-container-horizontal');
+    let stickerContainer = window.innerWidth < 576 ? stickerContainerHorizontal : stickerContainerVertical;
+    const previewContainerVertical = document.getElementById('preview-container');
+    const previewContainerHorizontal = document.getElementById('preview-container-horizontal');
+    let previewContainer = window.innerWidth < 576 ? previewContainerHorizontal : previewContainerVertical;
+    previewContainer.classList.remove('d-none');
     const mainContainer = document.getElementById('main-container');
     const stickerElements = document.getElementsByClassName('sticker');
     const liveStickerContainer = document.getElementById('live-sticker-container');
     let LSCwidth;
     let LSCheight;
     let captureMode = true;
+
+    if (stickerContainer === stickerContainerHorizontal) {
+        stickerContainerAbove.style.height = "15vh";
+        stickerContainerAbove.classList.add('justify-content-center');
+    }
 
     const startWebcam = async () => { // USE WITH AWAIT
         imageElement.classList.add('d-none');
@@ -97,9 +108,21 @@ export const setCreatePost = async () => {
         imageElement.src = imageUrl;
         imageElement.classList.add('preview-image');
 
-        previewContainer.appendChild(rowElement);
+        previewContainerVertical.appendChild(rowElement);
         rowElement.appendChild(colElement);
         colElement.appendChild(imageElement);
+
+        const horizontalRowElement = previewContainerHorizontal.querySelector('.row');
+        const horizontalColElement = document.createElement('div');
+        horizontalColElement.classList.add('col-4');
+        const horizontalImageElement = document.createElement('img');
+        horizontalImageElement.src = imageUrl;
+        horizontalImageElement.classList.add('preview-image');
+        horizontalImageElement.style.maxHeight = "12vh";
+
+        horizontalRowElement.appendChild(horizontalColElement);
+        horizontalColElement.appendChild(horizontalImageElement);
+
     }
 
     const setLiveStickerContainer = (wait = true) => {
@@ -436,6 +459,29 @@ export const setCreatePost = async () => {
             liveSticker.style.height = changeToPercentage(liveSticker.style.height, LSCheight);
         }
         setLiveStickerContainer(false);
+
+        const oldStickerContainer = stickerContainer;
+        stickerContainer = window.innerWidth < 576 ? stickerContainerHorizontal : stickerContainerVertical;
+        if (stickerContainer !== oldStickerContainer && !oldStickerContainer.classList.contains('d-none')) {
+            oldStickerContainer.classList.add('d-none');
+            stickerContainer.classList.remove('d-none');
+        }
+
+        const oldPreviewContainer = previewContainer;
+        previewContainer = window.innerWidth < 576 ? previewContainerHorizontal : previewContainerVertical;
+        if (previewContainer !== oldPreviewContainer && !oldPreviewContainer.classList.contains('d-none')) {
+            oldPreviewContainer.classList.add('d-none');
+            previewContainer.classList.remove('d-none');
+        }
+
+        if (stickerContainer === stickerContainerHorizontal) {
+            stickerContainerAbove.style.height = "15vh";
+            stickerContainerAbove.classList.add('justify-content-center');
+        }
+        else {
+            stickerContainerAbove.style.height = "70vh";
+            stickerContainerAbove.classList.remove('justify-content-center');
+        }
     });
 
     // Sticker to Base64
