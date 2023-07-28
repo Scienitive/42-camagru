@@ -41,7 +41,7 @@ export const loadPosts = async (container, userId, reset = false) => {
         const commentContainer = newElement.querySelector('#comment-container');
         const commentForm = newElement.querySelector('#comment-form');
         const deleteButton = newElement.querySelector('#erase-post');
-        const modal = newElement.querySelector(".modal");
+        const deleteDialog = newElement.querySelector("#erase-dialog");
 
         newElement.setAttribute('post-id', post.id.toString());
         usernameElement.textContent = post.username;
@@ -79,11 +79,20 @@ export const loadPosts = async (container, userId, reset = false) => {
             deleteButton.classList.remove('d-none');
         }
 
-        deleteButton.addEventListener('click', async () => {
-            const postResponse = await AJAXDelete("post.controller.php", { postId: post.id });
-            if (postResponse.ok) {
-                newElement.remove();
-            }
+        deleteButton.addEventListener('click', () => {
+            deleteDialog.showModal();
+            const realDelete = deleteDialog.querySelector('#delete');
+            const cancel = deleteDialog.querySelector('#cancel');
+            realDelete.addEventListener('click', async () => {
+                const postResponse = await AJAXDelete("post.controller.php", { postId: post.id });
+                if (postResponse.ok) {
+                    newElement.remove();
+                }
+                deleteDialog.close();
+            });
+            cancel.addEventListener('click', () => {
+                deleteDialog.close();
+            });
         })
 
         container.appendChild(newElement);

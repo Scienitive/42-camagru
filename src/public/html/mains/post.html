@@ -19,6 +19,18 @@
                 </div>
                 <div class="col-2 mt-2">
                     <button id="erase-post" class="btn btn-link d-none"><i class="fa-regular fa-trash-can fa-xl" style="color: #ffffff;"></i></button>
+                    <dialog id="erase-dialog">
+                        <div class="card bg-dark text-white" style="border-radius: 1rem; border: 2px solid #ffffff;">
+                            <div class="card-body p-5 text-center">
+                                <div class="container">
+                                    <h2 class="fw-bold mb-2 text-uppercase">Are You Sure?</h2>
+                                    <p class="text-white-50 mb-4">This action is irreversible!</p>
+                                    <button id="delete" class="btn btn-outline-light btn-lg px-5 mx-1" role="button">Delete</button>
+                                    <button id="cancel" class="btn btn-outline-light btn-lg px-5 mx-1" role="button">Cancel</button>
+                                </div>
+                            </div>
+                        </div>    
+                    </dialog> 
                 </div>
             </div>
             <div class="row">

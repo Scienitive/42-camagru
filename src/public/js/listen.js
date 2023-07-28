@@ -266,6 +266,18 @@ document.addEventListener('scroll', async () => {
 
 // Event Listener For Page Loads
 export const afterPageLoad = async (location) => {
+    // HEADER
+    document.addEventListener('click', async (event) => {
+        if (event.target.id === 'signout-button') {
+            await AJAXDelete("session.controller.php");
+            window.location.replace("/");
+        }
+        else if (event.target.id === 'profile-button') {
+            const session = await (await AJAXGet("current-session.php")).json();
+            window.location.replace(`/?user=${session['user-id']}`);
+        }
+    });
+
     // MAIN-SECTION SETTINGS
     if (location === '/') {
         const mainSection = document.getElementById('main-section');
