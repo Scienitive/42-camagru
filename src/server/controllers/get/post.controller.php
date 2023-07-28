@@ -4,7 +4,7 @@ $pdo = require(__DIR__ . "/../../models/database.php");
 
 if (isset($_GET['lastPostId'])) {
     if (isset($_GET['userId'])) {
-        $sql = "SELECT posts.*, users.username, COUNT(likes.id) AS like_count
+        $sql = "SELECT posts.*, users.username, users.id AS user_id, COUNT(likes.id) AS like_count
             FROM posts
             JOIN users ON posts.user_id = users.id
             LEFT JOIN likes ON posts.id = likes.post_id
@@ -14,7 +14,7 @@ if (isset($_GET['lastPostId'])) {
             LIMIT 3";
     }
     else {
-        $sql = "SELECT posts.*, users.username, COUNT(likes.id) AS like_count
+        $sql = "SELECT posts.*, users.username, users.id AS user_id, COUNT(likes.id) AS like_count
             FROM posts
             JOIN users ON posts.user_id = users.id
             LEFT JOIN likes ON posts.id = likes.post_id
@@ -26,7 +26,7 @@ if (isset($_GET['lastPostId'])) {
 }
 else {
     if (isset($_GET['userId'])) {
-        $sql = "SELECT posts.*, users.username, COUNT(likes.id) AS like_count
+        $sql = "SELECT posts.*, users.username, users.id AS user_id, COUNT(likes.id) AS like_count
             FROM posts
             JOIN users ON posts.user_id = users.id
             LEFT JOIN likes ON posts.id = likes.post_id
@@ -36,7 +36,7 @@ else {
             LIMIT 3";
     }
     else {
-        $sql = "SELECT posts.*, users.username, COUNT(likes.id) AS like_count
+        $sql = "SELECT posts.*, users.username, users.id AS user_id, COUNT(likes.id) AS like_count
             FROM posts
             JOIN users ON posts.user_id = users.id
             LEFT JOIN likes ON posts.id = likes.post_id

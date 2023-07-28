@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS comments (
   post_id INT NOT NULL,
   comment VARCHAR(255) NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (post_id) REFERENCES posts(id)
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS likes (
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS likes (
   user_id INT NOT NULL,
   post_id INT NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (post_id) REFERENCES posts(id),
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
   UNIQUE KEY user_post_unique (user_id, post_id)
 );
 

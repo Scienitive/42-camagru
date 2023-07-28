@@ -2,7 +2,7 @@ import { AJAXDelete, AJAXGet, AJAXGetHTML, AJAXPost } from "./ajax.js";
 import { setCreatePost, stopWebcam } from "./createPost.js";
 import { loadComments, loadPosts } from "./posts.js";
 import { setSettings } from "./settings.js";
-import { buttonLoadingOff, buttonLoadingOn, createNewToken, createNewTokenFromOldToken, convertStringToElement } from "./utility.js";
+import { buttonLoadingOff, buttonLoadingOn, createNewToken, createNewTokenFromOldToken, convertStringToElement, setSessionVariable } from "./utility.js";
 
 // Event Listener For Buttons
 document.addEventListener('click', async (e) => {
@@ -86,6 +86,7 @@ document.addEventListener('submit', async (e) => {
             const mailContent = `Hi ${user.username},\n\nWelcome to Camagru!\n\nPlease click the link below to verify your account.\n\nhttp://localhost/verify?token=${user.verification_token}\n\nThanks,\n- Camagru`;
             const mailResponse = await AJAXPost("send-mail.controller.php", { email: formData.get('email'), subject: mailSubject, content: mailContent });
             if (mailResponse.ok) {
+                await setSessionVariable('verification-sent');
                 window.location.replace("/verification-sent");
             }
             else {
@@ -292,21 +293,18 @@ export const afterPageLoad = async (location) => {
             content.textContent = "You are ready to go.";
         }
         else {
-            if (verifyResponse.status === 404) {
-                header.textContent = "Verification Unsuccessful!";
-                content.textContent = "Verification token is invalid.";
-            }
-            else if (verifyResponse.status === 400) {
-                header.textContent = "Verification Unsuccessful!";
-                content.textContent = "You are already verified.";
-            }
-            else {
-                const errorMessage = await verifyResponse.text();
-                header.textContent = "Error!";
-                content.textContent = errorMessage;
-            }
+            window.location.replace("/403");
         }
         await createNewTokenFromOldToken(token);
+    }
+    else if (location === '/password-change') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        const userResponse = await AJAXGet("user.controller.php", { token: token });
+        if (!userResponse.ok) {
+            window.location.replace("/403");
+        }
     }
     else if (location === '/settings') {
         const session = await (await AJAXGet("current-session.php")).json();
@@ -331,5 +329,15 @@ export const afterPageLoad = async (location) => {
     }
     else if (location === '/create-post') {
         await setCreatePost();
+    }
+    else if (location === '/login') {
+        const forgotPassword = document.getElementById('forgot-password');
+        
+        const handleClick = async () => {
+            await setSessionVariable('password-change-send');
+            window.location.replace('/password-change-send');
+        }
+
+        forgotPassword.onclick = handleClick;
     }
 }

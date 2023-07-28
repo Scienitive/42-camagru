@@ -78,3 +78,9 @@ export const pixelToPercentage = (px, parentSize) => {
 export const percentageToPixel = (percentage, parentSize) => {
     return percentage * parentSize / 100;
 }
+
+export const setSessionVariable = async (variableName) => {
+    const variables = [variableName];
+    const values = ['true'];
+    await AJAXPost("session-var.controller.php", { variables: JSON.stringify(variables), values: JSON.stringify(values) });
+}

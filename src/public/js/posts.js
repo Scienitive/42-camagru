@@ -1,4 +1,4 @@
-import { AJAXGet, AJAXGetHTML } from "./ajax.js"
+import { AJAXDelete, AJAXGet, AJAXGetHTML } from "./ajax.js"
 import { convertStringToElement } from "./utility.js";
 
 let lastPostId = null;
@@ -40,6 +40,8 @@ export const loadPosts = async (container, userId, reset = false) => {
         const likeButton = newElement.querySelector('#like-post');
         const commentContainer = newElement.querySelector('#comment-container');
         const commentForm = newElement.querySelector('#comment-form');
+        const deleteButton = newElement.querySelector('#erase-post');
+        const modal = newElement.querySelector(".modal");
 
         newElement.setAttribute('post-id', post.id.toString());
         usernameElement.textContent = post.username;
@@ -72,6 +74,17 @@ export const loadPosts = async (container, userId, reset = false) => {
             divider.classList.remove('d-none');
             likedText.classList.add('mb-2');
         }
+
+        if (post.user_id == session['user-id']) {
+            deleteButton.classList.remove('d-none');
+        }
+
+        deleteButton.addEventListener('click', async () => {
+            const postResponse = await AJAXDelete("post.controller.php", { postId: post.id });
+            if (postResponse.ok) {
+                newElement.remove();
+            }
+        })
 
         container.appendChild(newElement);
     }

@@ -1,4 +1,4 @@
-import { AJAXGet, AJAXGetHTML } from "./ajax.js";
+import { AJAXDelete, AJAXGet, AJAXGetHTML } from "./ajax.js";
 import { afterPageLoad } from "./listen.js";
 
 document.addEventListener('click', (e) => {
@@ -154,6 +154,34 @@ const changeRoute = async (route) => {
     }
     else if (route.name === "/create-post") {
         route = session.hasOwnProperty('user-id') ? urlRoutes["/create-post"] : urlRoutes["/404"];
+    }
+    else if (route.name === "/verification-sent") {
+        route = session.hasOwnProperty('verification-sent') ? urlRoutes["/verification-sent"] : urlRoutes["/403"];
+        if (session.hasOwnProperty('verification-sent')) {
+            const deleteVariables = ['verification-sent'];
+            await AJAXDelete("session-var.controller.php", { variables: JSON.stringify(deleteVariables) });
+        }
+    }
+    else if (route.name === "/post-successful") {
+        route = session.hasOwnProperty('post-successful') ? urlRoutes["/post-successful"] : urlRoutes["/403"];
+        if (session.hasOwnProperty('post-successful')) {
+            const deleteVariables = ['post-successful'];
+            await AJAXDelete("session-var.controller.php", { variables: JSON.stringify(deleteVariables) });
+        }
+    }
+    else if (route.name === "/post-unsuccessful") {
+        route = session.hasOwnProperty('post-unsuccessful') ? urlRoutes["/post-unsuccessful"] : urlRoutes["/403"];
+        if (session.hasOwnProperty('post-unsuccessful')) {
+            const deleteVariables = ['post-unsuccessful'];
+            await AJAXDelete("session-var.controller.php", { variables: JSON.stringify(deleteVariables) });
+        }
+    }
+    else if (route.name === "/password-change-send") {
+        route = session.hasOwnProperty('password-change-send') ? urlRoutes["/password-change-send"] : urlRoutes["/403"];
+        if (session.hasOwnProperty('password-change-send')) {
+            const deleteVariables = ['password-change-send'];
+            await AJAXDelete("session-var.controller.php", { variables: JSON.stringify(deleteVariables) });
+        }
     }
 
     return route;

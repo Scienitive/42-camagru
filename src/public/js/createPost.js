@@ -1,5 +1,5 @@
 import { AJAXPost, AJAXGet } from "./ajax.js";
-import { percentageToPixel, pixelToPercentage } from "./utility.js";
+import { percentageToPixel, pixelToPercentage, setSessionVariable } from "./utility.js";
 
 let mediaStream = null;
 
@@ -483,6 +483,7 @@ export const setCreatePost = async () => {
             console.log(imageFileName);
             const postResponse = await AJAXPost("post.controller.php", { userId: session['user-id'], imageFileName: `/public/uploads/${imageFileName}` });
             if (postResponse.ok) {
+                await setSessionVariable('post-successful');
                 window.location.replace("/post-successful");
             }
             else {
