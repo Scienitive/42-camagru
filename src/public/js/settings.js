@@ -32,6 +32,9 @@ export const setSettings = async () => {
                 saveButton.disabled = true;
             }
         }
+        if (!emailSent && verificationInput.value !== '') {
+            saveButton.disabled = true;
+        }
     }
     
     sendButton.addEventListener('click', async () => {

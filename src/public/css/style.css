@@ -16,10 +16,10 @@ body {
 
 /* These 2 needs to match each other */
 .fixed-row { 
-  height: 480px;
+  height: 50vh;
 }
 .fixed-height-img {
-  max-height: 480px;
+  max-height: 50vh;
   object-fit: contain;
 }
 

@@ -1,22 +1,26 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-10 col-md-8 col-lg-6 col-xl-5">
-            <div class="card bg-dark text-white" style="border-radius: 1rem;">
+            <div class="card bg-dark text-white my-3" style="border-radius: 1rem;">
                 <form id="settings-form" class="card-body p-5 text-center">
                     <h2 class="fw-bold mb-2 text-uppercase">Settings</h2>
                     <p class="text-white-50 mb-3">Change your personal information!</p>
 
-                    <div id="alert" class="alert alert-danger mx-5 mb-4 d-none" role="alert"></div>
+                    <div id="alert" class="alert alert-danger mx-3 mb-4 d-none" role="alert"></div>
 
                     <div class="form-outline form-white mb-1 mt-2 input-group">
-                        <input type="email" id="email" name="email" class="form-control form-control-lg text-center w-50" />
+                        <input type="email" id="email" name="email" class="form-control form-control-lg text-center" />
                         <button id="send-button" class="btn btn-outline-secondary" type="button" disabled>
                             <span class="btn-text">Send</span>
                             <div class="spinner-border d-none" role="status"></div>
                         </button>
-                        <input type="verification" id="verification" name="verification" class="form-control form-control-lg text-center" />
                     </div>
                     <label class="form-label mb-3" for="email">Email</label>
+
+                    <div class="form-outline form-white mb-1">
+                        <input type="verification" id="verification" name="verification" class="form-control form-control-lg text-center" />
+                    </div>
+                    <label class="form-label mb-3" for="verification">Email Verification</label>
 
                     <div class="form-outline form-white mb-1">
                         <input type="name" id="uname" name="uname" class="form-control form-control-lg text-center" />
@@ -41,7 +45,7 @@
                     <label class="form-label mb-3">Email Notification</label>
                     <div class="mb-2"></div>
 
-                    <button id="save-button" class="btn btn-outline-light btn-lg px-5 w-50" type="submit">
+                    <button id="save-button" class="btn btn-outline-light btn-lg px-5" type="submit">
                         <span class="btn-text">Save</span>
                         <div class="spinner-border d-none" role="status"></div>
                     </button>
