@@ -45,6 +45,10 @@ export const loadPosts = async (container, userId, reset = false) => {
 
         newElement.setAttribute('post-id', post.id.toString());
         usernameElement.textContent = post.username;
+        const handleClick = () => {
+            window.location.replace(`/?user=${post.user_id}`);
+        };
+        usernameElement.onclick = handleClick;
         usernameElement.setAttribute('post-id', post.id.toString());
         imageElement.src = post.image;
         likeCountElement.textContent = post.like_count;

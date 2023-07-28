@@ -292,6 +292,13 @@ export const afterPageLoad = async (location) => {
         const urlParams = new URLSearchParams(window.location.search);
         const container = document.getElementById('main-posts');
         await loadPosts(container, urlParams.get('user'), true);
+        const post = document.getElementById('post-container');
+        if (!post) {
+            const mainSection = document.getElementById('main-section');
+            mainSection.classList.add('flex-grow-1', 'align-items-center');
+            const looksEmptyElement = convertStringToElement(await (await AJAXGetHTML(`mains/looks-empty.html`)).text());
+            container.appendChild(looksEmptyElement);
+        }
         stopWebcam();
     }
     else if (location === '/verify') {
