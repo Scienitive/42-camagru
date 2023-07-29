@@ -2,3 +2,4 @@
 tools/.env
 src/public/uploads/*
 node_modules
+src/public/js/script.js
