@@ -875,6 +875,7 @@ const setCreatePost = async () => {
 
     document.addEventListener('mousedown', (event) => {
         if (event.target.classList.contains('live-sticker')) {
+            event.preventDefault();
             currentLiveSticker = event.target;
             prevX = event.clientX;
             prevY = event.clientY;
