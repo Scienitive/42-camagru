@@ -1,4 +1,4 @@
 .DS_Store
 tools/.env
 src/public/uploads/*
-src/public/js/main.js
+node_modules

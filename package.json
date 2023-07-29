@@ -1,0 +1,16 @@
+{
+  "name": "42-camagru",
+  "version": "1.0.0",
+  "description": "The camagru project at 42 schools.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.22.9",
+    "@babel/preset-env": "^7.22.9"
+  }
+}

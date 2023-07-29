@@ -25,7 +25,8 @@ include(__DIR__ . "/models/session.php");
             <div id="header-section"></div>
             <div id="main-section" class="d-flex flex-grow-1 align-items-center"></div>
         </div>
-        <script src="../public/js/router.js" type="module"></script>
-        <script src="../public/js/listen.js" type="module"></script>
+        <!-- <script src="../public/js/router.js" type="module"></script>
+        <script src="../public/js/listen.js" type="module"></script> -->
+        <script src="../public/js/script.js"></script>
     </body>
 </html>

@@ -1,4 +1,7 @@
 <?php
+if (isset($_POST['sessionId'])) {
+    session_id($_POST['sessionId']);
+}
 include(__DIR__ . "/../../models/session.php");
 
 if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) || empty($_POST['password'])) {

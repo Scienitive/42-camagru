@@ -1,4 +1,7 @@
 <?php
+if (isset($_POST['sessionId'])) {
+    session_id($_POST['sessionId']);
+}
 include(__DIR__ . "/../../models/session.php");
 
 $variables = json_decode($_POST['variables']);
