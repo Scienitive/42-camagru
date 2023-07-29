@@ -1739,10 +1739,10 @@ const changeRoute = async (route) => {
         route = session.hasOwnProperty('user-id') ? urlRoutes["/"] : urlRoutes["/signup"];
     }
     else if (route.name === "/settings") {
-        route = session.hasOwnProperty('user-id') ? urlRoutes["/settings"] : urlRoutes["/404"];
+        route = session.hasOwnProperty('user-id') ? urlRoutes["/settings"] : urlRoutes["/403"];
     }
     else if (route.name === "/create-post") {
-        route = session.hasOwnProperty('user-id') ? urlRoutes["/create-post"] : urlRoutes["/404"];
+        route = session.hasOwnProperty('user-id') ? urlRoutes["/create-post"] : urlRoutes["/403"];
     }
     else if (route.name === "/verification-sent") {
         route = session.hasOwnProperty('verification-sent') ? urlRoutes["/verification-sent"] : urlRoutes["/403"];
