@@ -1030,7 +1030,7 @@ const setCreatePost = async () => {
         if (!captureMode) {
             if (currentLiveSticker) {
                 event.preventDefault();
-                const minumumWidth = 4; // Percentage (also Height)
+                const minumumWidth = 10; // Percentage (also Height)
                 let newX;
                 let newY;
                 if (event.type === 'mousemove') {
@@ -1041,9 +1041,6 @@ const setCreatePost = async () => {
                     const touch = event.touches[0];
                     newX = prevX - Math.floor(touch.clientX);
                     newY = prevY - Math.floor(touch.clientY);
-                    console.log(touch.clientX);
-                    console.log(prevX);
-                    console.log(prevX - Math.floor(touch.clientX))
                 }
 
                 // Moving the sticker
@@ -1112,30 +1109,32 @@ const setCreatePost = async () => {
                 }
             }
 
-            // Cursor Changes
-            if (event.target.classList.contains('live-sticker')) {
-                if (!resizeDirection) {
-                    const { left, top, right, bottom } = event.target.getBoundingClientRect();
-                    const borderRatio = 10/100;
-                    let borderWidth = Math.floor(parseInt(changeToPixel(event.target.style.width, LSCwidth)) * borderRatio);
-                    let borderHeight = Math.floor(parseInt(changeToPixel(event.target.style.height, LSCheight)) * borderRatio);
-                    if (borderHeight < 2) {borderHeight = 2;}
-                    if (borderWidth < 2) {borderWidth = 2;}
+            if (event.type === 'mousemove') {
+                // Cursor Changes
+                if (event.target.classList.contains('live-sticker')) {
+                    if (!resizeDirection) {
+                        const { left, top, right, bottom } = event.target.getBoundingClientRect();
+                        const borderRatio = 10/100;
+                        let borderWidth = Math.floor(parseInt(changeToPixel(event.target.style.width, LSCwidth)) * borderRatio);
+                        let borderHeight = Math.floor(parseInt(changeToPixel(event.target.style.height, LSCheight)) * borderRatio);
+                        if (borderHeight < 2) {borderHeight = 2;}
+                        if (borderWidth < 2) {borderWidth = 2;}
 
-                    if (event.clientY >= top && event.clientY <= top + borderHeight) {
-                        event.target.style.cursor = 'n-resize';
-                    }
-                    else if (event.clientY >= bottom - borderHeight && event.clientY <= bottom) {
-                        event.target.style.cursor = 's-resize';
-                    }
-                    else if (event.clientX >= left && event.clientX <= left + borderWidth) {
-                        event.target.style.cursor = 'w-resize';
-                    }
-                    else if (event.clientX >= right - borderWidth && event.clientX <= right) {
-                        event.target.style.cursor = 'e-resize';
-                    }
-                    else {
-                        event.target.style.cursor = 'auto';
+                        if (event.clientY >= top && event.clientY <= top + borderHeight) {
+                            event.target.style.cursor = 'n-resize';
+                        }
+                        else if (event.clientY >= bottom - borderHeight && event.clientY <= bottom) {
+                            event.target.style.cursor = 's-resize';
+                        }
+                        else if (event.clientX >= left && event.clientX <= left + borderWidth) {
+                            event.target.style.cursor = 'w-resize';
+                        }
+                        else if (event.clientX >= right - borderWidth && event.clientX <= right) {
+                            event.target.style.cursor = 'e-resize';
+                        }
+                        else {
+                            event.target.style.cursor = 'auto';
+                        }
                     }
                 }
             }
@@ -1220,14 +1219,10 @@ const setCreatePost = async () => {
         const imageResponse = await AJAXPost("image.controller.php", { userId: session['user-id'], baseImage: extractString(imageElement.src), height: imageElement.offsetHeight, stickerArray: JSON.stringify(stickerInformation) });
         if (imageResponse.ok) {
             const imageFileName = await imageResponse.text();
-            console.log(imageFileName);
             const postResponse = await AJAXPost("post.controller.php", { userId: session['user-id'], imageFileName: `/public/uploads/${imageFileName}` });
             if (postResponse.ok) {
                 await setSessionVariable('post-successful');
                 window.location.replace("/post-successful");
-            }
-            else {
-                console.log(await postResponse.text());
             }
         }
     });
