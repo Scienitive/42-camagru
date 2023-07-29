@@ -404,6 +404,8 @@ const setSettings = async () => {
 let lastPostId = null;
 
 const loadPosts = async (container, userId, reset = false) => {
+    const isDialogSupported = typeof HTMLDialogElement !== 'undefined';
+
     let posts;
     if (reset) {
         lastPostId = null;
@@ -442,6 +444,10 @@ const loadPosts = async (container, userId, reset = false) => {
         const commentForm = newElement.querySelector('#comment-form');
         const deleteButton = newElement.querySelector('#erase-post');
         const deleteDialog = newElement.querySelector("#erase-dialog");
+
+        if (!isDialogSupported) {
+            deleteDialog.remove();
+        }
 
         newElement.setAttribute('post-id', post.id.toString());
         usernameElement.textContent = post.username;
@@ -483,20 +489,28 @@ const loadPosts = async (container, userId, reset = false) => {
             deleteButton.classList.remove('d-none');
         }
 
+        const deletePost = async () => {
+            const postResponse = await AJAXDelete("post.controller.php", { postId: post.id });
+            if (postResponse.ok) {
+                newElement.remove();
+            }
+        }
         deleteButton.addEventListener('click', () => {
-            deleteDialog.showModal();
-            const realDelete = deleteDialog.querySelector('#delete');
-            const cancel = deleteDialog.querySelector('#cancel');
-            realDelete.addEventListener('click', async () => {
-                const postResponse = await AJAXDelete("post.controller.php", { postId: post.id });
-                if (postResponse.ok) {
-                    newElement.remove();
-                }
-                deleteDialog.close();
-            });
-            cancel.addEventListener('click', () => {
-                deleteDialog.close();
-            });
+            if (isDialogSupported) {
+                deleteDialog.showModal();
+                const realDelete = deleteDialog.querySelector('#delete');
+                const cancel = deleteDialog.querySelector('#cancel');
+                realDelete.addEventListener('click', async () => {
+                    deletePost();
+                    deleteDialog.close();
+                });
+                cancel.addEventListener('click', () => {
+                    deleteDialog.close();
+                });
+            }
+            else {
+                deletePost();
+            }
         })
 
         container.appendChild(newElement);
