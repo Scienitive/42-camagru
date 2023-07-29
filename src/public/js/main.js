@@ -220,7 +220,28 @@ const setSessionVariable = async (variableName) => {
     await AJAXPost("session-var.controller.php", { variables: JSON.stringify(variables), values: JSON.stringify(values), sessionId: getSessionId() });
 }
 
+const getBrowserInfo = () => {
+    const userAgent = navigator.userAgent;
+    let browserName = "";
+    let browserVersion = "";
+
+    if (/Firefox\/([0-9.]+)/i.test(userAgent)) {
+        browserName = "Firefox";
+        browserVersion = userAgent.match(/Firefox\/([0-9.]+)/i)[1];
+    }
+    else if (/Chrome\/([0-9.]+)/i.test(userAgent)) {
+        browserName = "Chrome";
+        browserVersion = userAgent.match(/Chrome\/([0-9.]+)/i)[1];
+    }
+
+    return { name: browserName, version: browserVersion };
+}
+
 const getSessionId = () => {
+    const browserInfo = getBrowserInfo();
+    if ((browserInfo.name === 'Chrome' && parseInt(browserInfo.version) >= 51) || (browserInfo.name === 'Firefox' && parseInt(browserInfo.version) >= 60)) {
+        return null;
+    }
     if (getCookie('PHPSESSID')){
         return getCookie('PHPSESSID');
     }
@@ -234,6 +255,7 @@ const getSessionId = () => {
     }
     return randomString;
 }
+
 //#endregion
 
 //#region SETTINGS.JS

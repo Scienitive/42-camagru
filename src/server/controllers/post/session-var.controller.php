@@ -1,5 +1,5 @@
 <?php
-if (isset($_POST['sessionId'])) {
+if (isset($_POST['sessionId']) && $_POST['sessionId'] !== 'null') {
     session_id($_POST['sessionId']);
 }
 include(__DIR__ . "/../../models/session.php");
