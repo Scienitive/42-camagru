@@ -873,34 +873,70 @@ const setCreatePost = async () => {
         return changeToPercentage(height, parentHeight);
     }
 
-    document.addEventListener('mousedown', (event) => {
+    const handleMouseDown = (event) => {
         if (event.target.classList.contains('live-sticker')) {
             event.preventDefault();
             currentLiveSticker = event.target;
-            prevX = event.clientX;
-            prevY = event.clientY;
-        }
-        if (event.target.style.cursor === 'auto') {
-            resizeDirection = null;
-        }
-        else if (event.target.style.cursor === 'n-resize') {
-            resizeDirection = 'top';
-        }
-        else if (event.target.style.cursor === 's-resize') {
-            resizeDirection = 'bottom';
-        }
-        else if (event.target.style.cursor === 'w-resize') {
-            resizeDirection = 'left';
-        }
-        else if (event.target.style.cursor === 'e-resize') {
-            resizeDirection = 'right';
-        }
-    });
+            if (event.type === 'mousedown') {
+                prevX = event.clientX;
+                prevY = event.clientY;
+            }
+            else if (event.type === 'touchstart') {
+                const touch = event.touches[0];
+                prevX = Math.floor(touch.clientX);
+                prevY = Math.floor(touch.clientY);
+            }
+        
+            if (event.type === 'mousedown') {
+                if (event.target.style.cursor === 'auto') {
+                    resizeDirection = null;
+                }
+                else if (event.target.style.cursor === 'n-resize') {
+                    resizeDirection = 'top';
+                }
+                else if (event.target.style.cursor === 's-resize') {
+                    resizeDirection = 'bottom';
+                }
+                else if (event.target.style.cursor === 'w-resize') {
+                    resizeDirection = 'left';
+                }
+                else if (event.target.style.cursor === 'e-resize') {
+                    resizeDirection = 'right';
+                }
+            }
+            else if (event.type === 'touchstart') {
+                const touch = event.touches[0];
+                const { left, top, right, bottom } = event.target.getBoundingClientRect();
+                const borderRatio = 20/100;
+                let borderWidth = Math.floor(parseInt(changeToPixel(event.target.style.width, LSCwidth)) * borderRatio);
+                let borderHeight = Math.floor(parseInt(changeToPixel(event.target.style.height, LSCheight)) * borderRatio);
+                if (borderHeight < 2) {borderHeight = 2;}
+                if (borderWidth < 2) {borderWidth = 2;}
 
-    document.addEventListener('mouseup', () => {
+                if (Math.floor(touch.clientY) >= top && Math.floor(touch.clientY) <= top + borderHeight) {
+                    resizeDirection = 'top';
+                }
+                else if (Math.floor(touch.clientY) >= bottom - borderHeight && Math.floor(touch.clientY) <= bottom) {
+                    resizeDirection = 'bottom';
+                }
+                else if (Math.floor(touch.clientX) >= left && Math.floor(touch.clientX) <= left + borderWidth) {
+                    resizeDirection = 'left';
+                }
+                else if (Math.floor(touch.clientX) >= right - borderWidth && Math.floor(touch.clientX) <= right) {
+                    resizeDirection = 'right';
+                }
+                else {
+                    resizeDirection = null;
+                }
+            }
+        }
+    }
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('touchstart', handleMouseDown, { passive: false })
+
+    const handleMouseUp = () => {
         if (currentLiveSticker) {
             const liveStickers = mainContainer.querySelectorAll('.live-sticker');
-            console.log(liveStickers.length);
             const destroyRatio = 2 / 3;
             if (parseInt(currentLiveSticker.style.left) < 0) {
                 if (parseInt(currentLiveSticker.style.left) > 0 - currentLiveSticker.width * destroyRatio) {
@@ -949,14 +985,29 @@ const setCreatePost = async () => {
             currentLiveSticker = null;
             resizeDirection = null;
         }
-    });
+    }
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('touchend', handleMouseUp);
 
-    window.addEventListener('mousemove', (event) => {
+    const handleMouseMove = (event) => {
         if (!captureMode) {
             if (currentLiveSticker) {
+                event.preventDefault();
                 const minumumWidth = 4; // Percentage (also Height)
-                const newX = prevX - event.clientX;
-                const newY = prevY - event.clientY;
+                let newX;
+                let newY;
+                if (event.type === 'mousemove') {
+                    newX = prevX - event.clientX;
+                    newY = prevY - event.clientY;
+                }
+                else if (event.type === 'touchmove') {
+                    const touch = event.touches[0];
+                    newX = prevX - Math.floor(touch.clientX);
+                    newY = prevY - Math.floor(touch.clientY);
+                    console.log(touch.clientX);
+                    console.log(prevX);
+                    console.log(prevX - Math.floor(touch.clientX))
+                }
 
                 // Moving the sticker
                 if (!resizeDirection) {
@@ -1013,19 +1064,24 @@ const setCreatePost = async () => {
                         currentLiveSticker.style.top = oldTop;
                     }
                 }
-
-                prevX = event.clientX;
-                prevY = event.clientY;
+                if (event.type === 'mousemove') {
+                    prevX = event.clientX;
+                    prevY = event.clientY;
+                }
+                else if (event.type === 'touchmove') {
+                    const touch = event.touches[0];
+                    prevX = Math.floor(touch.clientX);
+                    prevY = Math.floor(touch.clientY);
+                }
             }
 
             // Cursor Changes
             if (event.target.classList.contains('live-sticker')) {
                 if (!resizeDirection) {
                     const { left, top, right, bottom } = event.target.getBoundingClientRect();
-                    const borderRatio = 5/100;
+                    const borderRatio = 10/100;
                     let borderWidth = Math.floor(parseInt(changeToPixel(event.target.style.width, LSCwidth)) * borderRatio);
                     let borderHeight = Math.floor(parseInt(changeToPixel(event.target.style.height, LSCheight)) * borderRatio);
-                    console.log(event.target.style.width);
                     if (borderHeight < 2) {borderHeight = 2;}
                     if (borderWidth < 2) {borderWidth = 2;}
 
@@ -1047,7 +1103,9 @@ const setCreatePost = async () => {
                 }
             }
         }
-    });
+    }
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleMouseMove, { passive: false });
 
     window.addEventListener('resize', () => {
         const liveStickers = mainContainer.querySelectorAll('.live-sticker');
