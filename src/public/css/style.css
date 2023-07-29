@@ -8,6 +8,10 @@
   -ms-user-select: none;
 }
 
+.uname-font {
+  font-family: "Niconne", sans-serif;
+}
+
 body {
   background-image: url("../media/body-background.jpg");
   background-size: cover;

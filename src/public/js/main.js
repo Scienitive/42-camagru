@@ -40,6 +40,17 @@ const customURLSearchParams = (parameter) => {
     else if (typeof parameter === 'string') {
         const queryParams = {};
         const cleanedSearchString = parameter.replace(/^\?/, '');
+        if (cleanedSearchString.trim() === '') {
+            return {
+                object: function () {
+                    return queryParams;
+                },
+                get: function (key) {
+                    return queryParams[key] || null;
+                },
+                size: Object.keys(queryParams).length
+            };
+        }
         const paramPairs = cleanedSearchString.split('&');
 
         for (const paramPair of paramPairs) {
@@ -48,9 +59,13 @@ const customURLSearchParams = (parameter) => {
         }
 
         return {
+            object: function () {
+                return queryParams;
+            },
             get: function (key) {
                 return queryParams[key] || null;
-            }
+            },
+            size: Object.keys(queryParams).length
         };
     }
     else {
@@ -1710,7 +1725,7 @@ const urlLocationHandler = async (pathname) => {
     if (typeof(pathname) != "object") { // If it hasn't come from window.onpopstate
         const urlParams = customURLSearchParams(window.location.search);
         if (urlParams.size > 0 && pathname === undefined) { // pathname === undefined means if it's directly applied from address bar
-            const queryString = urlParams.toString();
+            const queryString = customURLSearchParams(urlParams.object());
             window.history.pushState({}, "", `${location}?${queryString}`);
         }
         else {
