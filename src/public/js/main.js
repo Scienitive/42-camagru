@@ -219,6 +219,10 @@ const alertModify = (alertElement, message, red = true) => {
         alertElement.classList.remove('alert-danger');
         alertElement.classList.add('alert-success');
     }
+    else {
+        alertElement.classList.add('alert-danger');
+        alertElement.classList.remove('alert-success');
+    }
 }
 
 const pixelToPercentage = (px, parentSize) => {
@@ -334,6 +338,7 @@ const setSettings = async () => {
             saveButtonModify();
             await createNewTokenFromOldToken(user.verification_token);
             alertModify(alertElement, "Verification code has been sent to your new email.", false);
+            emailInput.disabled = true;
             buttonLoadingOff(sendButton, false);
         }
         else {
@@ -1499,18 +1504,6 @@ document.addEventListener('scroll', async () => {
 
 // Event Listener For Page Loads
 const afterPageLoad = async (location) => {
-    // GENERAL
-    const buttons = document.getElementsByTagName('button');
-    for (const button of buttons) {
-        const icons = button.getElementsByTagName('i');
-        const smalls = button.getElementsByTagName('small');
-        for (const icon of icons) {
-            icon.style.pointerEvents = "none";
-        }
-        for (const small of smalls) {
-            small.style.pointerEvents = "none";
-        }
-    }
     // HEADER
     document.addEventListener('click', async (event) => {
         if (event.target.id === 'signout-button') {
@@ -1634,6 +1627,19 @@ const afterPageLoad = async (location) => {
         }
 
         forgotPassword.onclick = handleClick;
+    }
+
+    // GENERAL
+    const buttons = document.getElementsByTagName('button');
+    for (const button of buttons) {
+        const icons = button.getElementsByTagName('i');
+        const smalls = button.getElementsByTagName('small');
+        for (const icon of icons) {
+            icon.style.pointerEvents = "none";
+        }
+        for (const small of smalls) {
+            small.style.pointerEvents = "none";
+        }
     }
 }
 //#endregion
