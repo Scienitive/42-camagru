@@ -57,14 +57,6 @@ input[type="comment"]:focus {
   outline: none !important;
 }
 
-button:is(:has(i)) i {
-  pointer-events: none;
-}
-
-button:is(:has(small)) small {
-  pointer-events: none;
-}
-
 .sticker {
   width: 90%;
   height: 90%;

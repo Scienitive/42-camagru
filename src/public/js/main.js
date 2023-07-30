@@ -1484,7 +1484,10 @@ document.addEventListener('submit', async (e) => {
 // Scroll Event Listener
 document.addEventListener('scroll', async () => {
     if (window.location.pathname === '/') {
-        if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
+        console.log(`scrollY = ${window.scrollY}`);
+        console.log(`innerHeight = ${window.innerHeight}`);
+        console.log(`scrollHeight = ${document.documentElement.scrollHeight}`);
+        if (window.scrollY + window.innerHeight + 0.5 >= document.documentElement.scrollHeight) {
             const container = document.getElementById('main-posts');
             const beforeLoadCount = container.querySelectorAll("#post-container").length;
             await loadPosts(container);
@@ -1499,6 +1502,18 @@ document.addEventListener('scroll', async () => {
 
 // Event Listener For Page Loads
 const afterPageLoad = async (location) => {
+    // GENERAL
+    const buttons = document.getElementsByTagName('button');
+    for (const button of buttons) {
+        const icons = button.getElementsByTagName('i');
+        const smalls = button.getElementsByTagName('small');
+        for (const icon of icons) {
+            icon.style.pointerEvents = "none";
+        }
+        for (const small of smalls) {
+            small.style.pointerEvents = "none";
+        }
+    }
     // HEADER
     document.addEventListener('click', async (event) => {
         if (event.target.id === 'signout-button') {
