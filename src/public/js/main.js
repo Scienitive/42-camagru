@@ -1486,7 +1486,13 @@ document.addEventListener('scroll', async () => {
     if (window.location.pathname === '/') {
         if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
             const container = document.getElementById('main-posts');
+            const beforeLoadCount = container.querySelectorAll("#post-container").length;
             await loadPosts(container);
+            const afterLoadCount = container.querySelectorAll("#post-container").length;
+            if (afterLoadCount <= beforeLoadCount) {
+                const footer = document.getElementById('footer');
+                footer.classList.remove('d-none');
+            }
         }
     }
 });
@@ -1525,6 +1531,8 @@ const afterPageLoad = async (location) => {
             mainSection.classList.add('flex-grow-1', 'align-items-center');
             const looksEmptyElement = convertStringToElement(await (await AJAXGetHTML(`mains/looks-empty.html`)).text());
             container.appendChild(looksEmptyElement);
+            const footer = document.getElementById('footer');
+            footer.classList.remove('d-none');
         }
         stopWebcam();
     }
@@ -1603,79 +1611,92 @@ const urlRoutes = {
         name: "/403",
         title: "Camagru | 403",
         headerLink: "",
-        mainLink: "403.html"
+        mainLink: "403.html",
+        footerLink: ""
     },
     "/404": {
         name: "/404",
         title: "Camagru | 404",
         headerLink: "",
-        mainLink: "404.html"
+        mainLink: "404.html",
+        footerLink: ""
     },
     "/": {
         name: "/",
         title: "Camagru",
         headerLink: "home.html",
-        mainLink: "home.html"
+        mainLink: "home.html",
+        footerLink: "footer.html"
     },
     "/login": {
         name: "/login",
         title: "Camagru | Login",
         headerLink: "login.html",
-        mainLink: "login.html"
+        mainLink: "login.html",
+        footerLink: ""
     },
     "/signup": {
         name: "/signup",
         title: "Camagru | Signup",
         headerLink: "signup.html",
-        mainLink: "signup.html"
+        mainLink: "signup.html",
+        footerLink: ""
     },
     "/verification-sent": {
         name: "/verification-sent",
         title: "Camagru | Verify",
         headerLink: "signup.html",
-        mainLink: "verification-sent.html"
+        mainLink: "verification-sent.html",
+        footerLink: ""
     },
     "/verify": {
         name: "/verify",
         title: "Camagru | Verify",
         headerLink: "signup.html",
-        mainLink: "verify.html"
+        mainLink: "verify.html",
+        footerLink: ""
     },
     "/password-change-send": {
         name: "/password-change-send",
         title: "Camagru | Password Change",
         headerLink: "signup.html",
-        mainLink: "password-change-1.html"
+        mainLink: "password-change-1.html",
+        footerLink: ""
     },
     "/password-change": {
         name: "/password-change",
         title: "Camagru | Password Change",
         headerLink: "signup.html",
-        mainLink: "password-change-2.html"
+        mainLink: "password-change-2.html",
+        footerLink: ""
     },
     "/settings": {
         name: "/settings",
         title: "Camagru | Settings",
         headerLink: "home.html",
-        mainLink: "settings.html"
+        mainLink: "settings.html",
+        footerLink: ""
     },
     "/create-post": {
         name: "/create-post",
         title: "Camagru | New Post",
         headerLink: "home.html",
-        mainLink: "create-post.html"
+        mainLink: "create-post.html",
+        footerLink: ""
     },
     "/post-successful": {
         name: "/post-successful",
         title: "Camagru | New Post",
         headerLink: "home.html",
-        mainLink: "post-successful.html"
+        mainLink: "post-successful.html",
+        footerLink: ""
     },
     "/post-unsuccessful": {
         name: "/post-unsuccessful",
         title: "Camagru | New Post",
         headerLink: "home.html",
-        mainLink: "post-unsuccessful.html"
+        mainLink: "post-unsuccessful.html",
+        footerLink: ""
     }
 };
 
@@ -1714,6 +1735,10 @@ const urlLocationHandler = async (pathname) => {
     if (route.mainLink !== "") {
         const mainElement = await (await AJAXGetHTML(`mains/${route.mainLink}`)).text();
         document.getElementById('main-section').innerHTML = mainElement;
+    }
+    if (route.footerLink !== "") {
+        const footerElement = await (await AJAXGetHTML(`footers/${route.footerLink}`)).text();
+        document.getElementById('footer-section').innerHTML = footerElement;
     }
     afterPageLoad(location);
 
