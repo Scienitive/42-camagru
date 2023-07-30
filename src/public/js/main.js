@@ -1484,9 +1484,6 @@ document.addEventListener('submit', async (e) => {
 // Scroll Event Listener
 document.addEventListener('scroll', async () => {
     if (window.location.pathname === '/') {
-        console.log(`scrollY = ${window.scrollY}`);
-        console.log(`innerHeight = ${window.innerHeight}`);
-        console.log(`scrollHeight = ${document.documentElement.scrollHeight}`);
         if (window.scrollY + window.innerHeight + 0.5 >= document.documentElement.scrollHeight) {
             const container = document.getElementById('main-posts');
             const beforeLoadCount = container.querySelectorAll("#post-container").length;
@@ -1597,6 +1594,35 @@ const afterPageLoad = async (location) => {
         stopWebcam();
     }
     else if (location === '/create-post') {
+        const stikcerNamesObject = await (await AJAXGet("sticker.controller.php")).json();
+        const stickerNames = Object.keys(stikcerNamesObject).map(key => stikcerNamesObject[key]);
+        const verticalStickerContainer = document.getElementById('sticker-container');
+        const horizontalStickerContainer = document.getElementById('sticker-container-horizontal');
+        const verticalStickerElement = convertStringToElement(await (await AJAXGetHTML(`mains/vertical-sticker.html`)).text());
+        const horizontalStickerElement = convertStringToElement(await (await AJAXGetHTML(`mains/horizontal-sticker.html`)).text());
+        for (let i = 0; i < stickerNames.length; i++) {
+            const newVertical = verticalStickerElement.cloneNode(true);
+            const newHorizontal = horizontalStickerElement.cloneNode(true);
+            const verticalImage = newVertical.querySelector(".sticker");
+            const horizontalImage = newHorizontal.querySelector(".sticker");
+            verticalImage.src = `/public/media/stickers/${stickerNames[i]}`;
+            horizontalImage.src = `/public/media/stickers/${stickerNames[i]}`;
+            // Vertical
+            if (i % 2 === 0) {
+                const row = document.createElement('div');
+                row.classList.add('row');
+                row.appendChild(newVertical);
+                verticalStickerContainer.appendChild(row);
+            }
+            else {
+                const allRows = verticalStickerContainer.querySelectorAll(".row");
+                const lastRow = allRows[allRows.length - 1];
+                lastRow.appendChild(newVertical);
+            }
+            // Horizontal
+            const row = horizontalStickerContainer.querySelector(".row");
+            row.appendChild(newHorizontal);
+        }
         await setCreatePost();
     }
     else if (location === '/login') {

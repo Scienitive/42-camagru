@@ -301,7 +301,6 @@ export const setCreatePost = async () => {
     document.addEventListener('mouseup', () => {
         if (currentLiveSticker) {
             const liveStickers = mainContainer.querySelectorAll('.live-sticker');
-            console.log(liveStickers.length);
             const destroyRatio = 2 / 3;
             if (parseInt(currentLiveSticker.style.left) < 0) {
                 if (parseInt(currentLiveSticker.style.left) > 0 - currentLiveSticker.width * destroyRatio) {
@@ -426,7 +425,6 @@ export const setCreatePost = async () => {
                     const borderRatio = 5/100;
                     let borderWidth = Math.floor(parseInt(changeToPixel(event.target.style.width, LSCwidth)) * borderRatio);
                     let borderHeight = Math.floor(parseInt(changeToPixel(event.target.style.height, LSCheight)) * borderRatio);
-                    console.log(event.target.style.width);
                     if (borderHeight < 2) {borderHeight = 2;}
                     if (borderWidth < 2) {borderWidth = 2;}
 
@@ -526,14 +524,10 @@ export const setCreatePost = async () => {
         const imageResponse = await AJAXPost("image.controller.php", { userId: session['user-id'], baseImage: extractString(imageElement.src), height: imageElement.offsetHeight, stickerArray: JSON.stringify(stickerInformation) });
         if (imageResponse.ok) {
             const imageFileName = await imageResponse.text();
-            console.log(imageFileName);
             const postResponse = await AJAXPost("post.controller.php", { userId: session['user-id'], imageFileName: `/public/uploads/${imageFileName}` });
             if (postResponse.ok) {
                 await setSessionVariable('post-successful');
                 window.location.replace("/post-successful");
-            }
-            else {
-                console.log(await postResponse.text());
             }
         }
     });
