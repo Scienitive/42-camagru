@@ -83,7 +83,7 @@ document.addEventListener('submit', async (e) => {
         if (signupResponse.ok) {
             const user = await signupResponse.json();
             const mailSubject = "Camagru - Email Verification";
-            const mailContent = `Hi ${user.username},\n\nWelcome to Camagru!\n\nPlease click the link below to verify your account.\n\nhttp://localhost/verify?token=${user.verification_token}\n\nThanks,\n- Camagru`;
+            const mailContent = `Hi ${user.username},\n\nWelcome to Camagru!\n\nPlease click the link below to verify your account.\n\nhttp://${window.location.hostname}/verify?token=${user.verification_token}\n\nThanks,\n- Camagru`;
             const mailResponse = await AJAXPost("send-mail.controller.php", { email: formData.get('email'), subject: mailSubject, content: mailContent });
             if (mailResponse.ok) {
                 await setSessionVariable('verification-sent');
@@ -130,7 +130,7 @@ document.addEventListener('submit', async (e) => {
             }
 
             const mailSubject = "Camagru - Password Change";
-            const mailContent = `Hi ${user.username},\n\nPlease click the link below to change your password.\n\nhttp://localhost/password-change?token=${user.verification_token}\n\nThanks,\n- Camagru`;
+            const mailContent = `Hi ${user.username},\n\nPlease click the link below to change your password.\n\nhttp://${window.location.hostname}/password-change?token=${user.verification_token}\n\nThanks,\n- Camagru`;
             const mailResponse = await AJAXPost("send-mail.controller.php", { email: formData.get('email'), subject: mailSubject, content: mailContent });
             if (mailResponse.ok) {
                 const alertElement = document.getElementById('alert');

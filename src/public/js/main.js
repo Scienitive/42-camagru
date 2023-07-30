@@ -288,6 +288,8 @@ const setSettings = async () => {
     const saveButton = document.getElementById('save-button');
     const emailInput = document.getElementById('email');
     const verificationInput = document.getElementById('verification');
+    const usernameInput = document.getElementById('uname');
+    const passwordInput = document.getElementById('password');
     const settingsForm = document.getElementById('settings-form');
     const notifOn = document.getElementById('notification-on');
     const alertElement = document.getElementById('alert');
@@ -364,12 +366,11 @@ const setSettings = async () => {
     settingsForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         buttonLoadingOn(saveButton);
-        const formData = new FormData(e.target);
 
         const newEmail = emailInput.value !== '' ? emailInput.value : null;
-        const verification = formData.get('verification') !== '' ? formData.get('verification') : null;
-        const newUsername = formData.get('uname') !== '' ? formData.get('uname') : null;
-        const newPassword = formData.get('password') !== '' ? formData.get('password') : null;
+        const verification = verificationInput.value !== '' ? verificationInput.value : null;
+        const newUsername = usernameInput.value !== '' ? usernameInput.value : null;
+        const newPassword = passwordInput.value !== '' ? passwordInput.value : null;
         const newNotification = notifOn.checked ? true : false;
         
         const jsonData = {};
@@ -447,6 +448,7 @@ let lastPostId = null;
 
 const loadPosts = async (container, userId, reset = false) => {
     const isDialogSupported = typeof HTMLDialogElement !== 'undefined';
+    const browserInfo =  getBrowserInfo();
 
     let posts;
     if (reset) {
@@ -503,6 +505,9 @@ const loadPosts = async (container, userId, reset = false) => {
         likeCountElement.textContent = post.like_count;
         likeCountElement.setAttribute('post-id', post.id.toString());
         dateElement.textContent = determineDate(post.created_at);
+        if (browserInfo.name === 'Firefox' && parseInt(browserInfo.version) < 60) {
+            dateElement.classList.add('d-none');
+        }
         likeButton.setAttribute('post-id', post.id.toString());
         commentContainer.setAttribute('post-id', post.id.toString());
         commentForm.setAttribute('post-id', post.id.toString());
@@ -1292,14 +1297,17 @@ document.addEventListener('submit', async (e) => {
     const submitButton = e.target.querySelector('button[type="submit"]');
     buttonLoadingOn(submitButton);
     const formData = new FormData(e.target);
+    const emailInput = document.getElementById('email');
+    const usernameInput = document.getElementById('uname');
+    const passwordInput = document.getElementById('password');
 
     if (e.target.id === "signup-form") {
         // CLIENT-SIDE CONTROLS
         const alertElement = document.getElementById('alert');
         const usernameRegex = /[^a-zA-Z0-9-_]/;
-        const username = formData.get('uname');
+        const username = usernameInput.value
         const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/;
-        const password = formData.get('password');
+        const password = passwordInput.value
         let errorMessage = "";
         if (usernameRegex.test(username)) {errorMessage = "Username must not include special characters other than (_) and (-).";}
         else if (username.length < 4) {errorMessage = "Username must be at least 4 characters.";}
@@ -1316,21 +1324,21 @@ document.addEventListener('submit', async (e) => {
         }
 
         // HTTP REQUEST
-        const token = await createNewToken(username + formData.get('email'), false);
+        const token = await createNewToken(username + emailInput.value, false);
         formData.append('token', token);
 
         const signupResponse = await AJAXPost("signup.controller.php", formData);
         if (signupResponse.ok) {
             const user = await signupResponse.json();
             const mailSubject = "Camagru - Email Verification";
-            const mailContent = `Hi ${user.username},\n\nWelcome to Camagru!\n\nPlease click the link below to verify your account.\n\nhttp://localhost/verify?token=${user.verification_token}\n\nThanks,\n- Camagru`;
-            const mailResponse = await AJAXPost("send-mail.controller.php", { email: formData.get('email'), subject: mailSubject, content: mailContent });
+            const mailContent = `Hi ${user.username},\n\nWelcome to Camagru!\n\nPlease click the link below to verify your account.\n\nhttp://${window.location.hostname}/verify?token=${user.verification_token}\n\nThanks,\n- Camagru`;
+            const mailResponse = await AJAXPost("send-mail.controller.php", { email: emailInput.value, subject: mailSubject, content: mailContent });
             if (mailResponse.ok) {
                 await setSessionVariable('verification-sent');
                 window.location.replace("/verification-sent");
             }
             else {
-                await AJAXDelete("user.controller.php", { email: formData.get('email') });
+                await AJAXDelete("user.controller.php", { email: emailInput.value });
                 errorMessage = await mailResponse.text();
                 alertElement.textContent = errorMessage;
                 alertElement.classList.remove('d-none');
@@ -1359,7 +1367,7 @@ document.addEventListener('submit', async (e) => {
         }
     }
     else if (e.target.id === "password-change-form-1") {
-        const userResponse = await AJAXGet("user.controller.php", { email: formData.get('email') });
+        const userResponse = await AJAXGet("user.controller.php", { email: emailInput.value });
         if (userResponse.ok) {
             const user = await userResponse.json();
             if (!user.is_verified) {
@@ -1371,8 +1379,8 @@ document.addEventListener('submit', async (e) => {
             }
 
             const mailSubject = "Camagru - Password Change";
-            const mailContent = `Hi ${user.username},\n\nPlease click the link below to change your password.\n\nhttp://localhost/password-change?token=${user.verification_token}\n\nThanks,\n- Camagru`;
-            const mailResponse = await AJAXPost("send-mail.controller.php", { email: formData.get('email'), subject: mailSubject, content: mailContent });
+            const mailContent = `Hi ${user.username},\n\nPlease click the link below to change your password.\n\nhttp://${window.location.hostname}/password-change?token=${user.verification_token}\n\nThanks,\n- Camagru`;
+            const mailResponse = await AJAXPost("send-mail.controller.php", { email: emailInput.value, subject: mailSubject, content: mailContent });
             if (mailResponse.ok) {
                 const alertElement = document.getElementById('alert');
                 alertElement.classList.remove('d-none', 'alert-danger');
@@ -1401,7 +1409,7 @@ document.addEventListener('submit', async (e) => {
         // CLIENT-SIDE CONTROLS
         const alertElement = document.getElementById('alert');
         const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/;
-        const password = formData.get('password');
+        const password = passwordInput.value;
         let errorMessage = "";
         if (!passwordRegex.test(password)) {errorMessage = "Password must include at least one uppercase, one lowecase and one number character.";}
         else if (password.length < 6) {errorMessage = "Password must be at least 6 characters.";}
@@ -1431,7 +1439,7 @@ document.addEventListener('submit', async (e) => {
             buttonLoadingOff(submitButton);
             return;
         }
-        const passwordResponse = await AJAXPost("password.controller.php", { password: formData.get('password'), token: token });
+        const passwordResponse = await AJAXPost("password.controller.php", { password: passwordInput.value, token: token });
         if (passwordResponse.ok) {
             const alertElement = document.getElementById('alert');
             alertElement.classList.remove('d-none', 'alert-danger');
@@ -1452,7 +1460,7 @@ document.addEventListener('submit', async (e) => {
         if (commentInput.value === '') {return;}
         const session = await (await AJAXGet("current-session.php", { sessionId: getSessionId() })).json();
         const postId = e.target.getAttribute('post-id');
-        const comment = formData.get('comment');
+        const comment = commentInput.value;
         e.target.reset();
 
         const commentResponse = await AJAXPost("comment.controller.php", { userId: session['user-id'], postId: postId, comment: comment });
@@ -1498,13 +1506,15 @@ document.addEventListener('submit', async (e) => {
 // Scroll Event Listener
 document.addEventListener('scroll', async () => {
     if (window.location.pathname === '/') {
-        if (window.scrollY + window.innerHeight + 0.5 >= document.documentElement.scrollHeight) {
+        const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
+        const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight;
+        if ((scrollTop + window.innerHeight) >= scrollHeight) {
             const container = document.getElementById('main-posts');
             const beforeLoadCount = container.querySelectorAll("#post-container").length;
             await loadPosts(container);
             const afterLoadCount = container.querySelectorAll("#post-container").length;
             if (afterLoadCount <= beforeLoadCount) {
-                const footer = document.getElementById('footer');
+                const footer = document.getElementById('footer-section');
                 footer.classList.remove('d-none');
             }
         }
@@ -1545,7 +1555,7 @@ const afterPageLoad = async (location) => {
             mainSection.classList.add('flex-grow-1', 'align-items-center');
             const looksEmptyElement = convertStringToElement(await (await AJAXGetHTML(`mains/looks-empty.html`)).text());
             container.appendChild(looksEmptyElement);
-            const footer = document.getElementById('footer');
+            const footer = document.getElementById('footer-section');
             footer.classList.remove('d-none');
         }
         stopWebcam();

@@ -18,7 +18,7 @@ include(__DIR__ . "/models/session.php");
         <div class="vh-100 d-flex flex-column">
             <div id="header-section"></div>
             <div id="main-section" class="d-flex flex-grow-1 align-items-center"></div>
-            <div id="footer-section"></div>
+            <div id="footer-section" class="d-none"></div>
         </div>
         <script src="../public/js/script.js"></script>
     </body>
