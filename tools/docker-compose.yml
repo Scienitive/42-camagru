@@ -45,3 +45,6 @@ services:
       - ../src:/var/www/html
     environment:
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - DB_HOST=${DATABASE_HOST}
+      - DB_NAME=${MYSQL_DB}
+      - DB_PASS=${MYSQL_ROOT_PASS}
