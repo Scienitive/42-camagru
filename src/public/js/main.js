@@ -53,7 +53,8 @@ const customURLSearchParams = (parameter) => {
         }
         const paramPairs = cleanedSearchString.split('&');
 
-        for (const paramPair of paramPairs) {
+        for (let i = 0; i < paramPairs.length; i++) {
+            const paramPair = paramPairs[i];
             const [key, value] = paramPair.split('=');
             queryParams[decodeURIComponent(key)] = decodeURIComponent(value);
         }
@@ -77,14 +78,13 @@ function getCookie(name) {
     const cookieString = document.cookie;
     const cookies = cookieString.split('; ');
   
-    for (const cookie of cookies) {
-      const [cookieName, cookieValue] = cookie.split('=');
-      if (cookieName === name) {
-        return decodeURIComponent(cookieValue);
-      }
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i];
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === name) {
+            return decodeURIComponent(cookieValue);
+        }
     }
-  
-    // If the cookie with the given name is not found
     return null;
   }
 //#endregion
@@ -366,7 +366,7 @@ const setSettings = async () => {
         buttonLoadingOn(saveButton);
         const formData = new FormData(e.target);
 
-        const newEmail = formData.get('email') !== '' ? formData.get('email') : null;
+        const newEmail = emailInput.value !== '' ? emailInput.value : null;
         const verification = formData.get('verification') !== '' ? formData.get('verification') : null;
         const newUsername = formData.get('uname') !== '' ? formData.get('uname') : null;
         const newPassword = formData.get('password') !== '' ? formData.get('password') : null;
@@ -474,7 +474,8 @@ const loadPosts = async (container, userId, reset = false) => {
     const postElement = convertStringToElement(await (await AJAXGetHTML(`mains/post.html`)).text());
     const session = await (await AJAXGet("current-session.php", { sessionId: getSessionId() })).json();
     
-    for (const post of posts) {
+    for (let i = 0; i < posts.length; i++) {
+        const post = posts[i];
         const newElement = postElement.cloneNode(true);
 
         const usernameElement = newElement.querySelector('#post-username');
@@ -508,10 +509,12 @@ const loadPosts = async (container, userId, reset = false) => {
 
         const likeResponse = await AJAXGet("like.controller.php", { userId: session['user-id'], postId: post.id.toString() });
         if (likeResponse.ok && (await likeResponse.text()) !== '0') {
-            const icon = likeButton.querySelector('i');
-            icon.classList.remove('fa-regular');
-            icon.classList.add('fa-solid');
-            icon.style.color = '#dc3545';
+            const icon = likeButton.querySelector('#like-true');
+            icon.classList.remove('d-none');
+        }
+        else if (likeResponse.ok) {
+            const icon = likeButton.querySelector('#like-false');
+            icon.classList.remove('d-none');
         }
 
         await loadComments(post.id, commentContainer);
@@ -587,7 +590,8 @@ const loadComments = async (postId, container = document.querySelector(`[post-id
 
     const commentElement = convertStringToElement(await (await AJAXGetHTML(`mains/comment.html`)).text());
 
-    for (const comment of comments) {
+    for (let i = 0; i < comments.length; i++) {
+        const comment = comments[i];
         const newElement = commentElement.cloneNode(true);
         const containerFirstElement = container.firstChild;
 
@@ -710,7 +714,8 @@ const setCreatePost = async () => {
         captureMode = !captureMode;
         if (captureMode) {
             const liveStickers = mainContainer.querySelectorAll(".live-sticker");
-            for (const liveSticker of liveStickers) {
+            for (let i = 0; i < liveStickers.length; i++) {
+                const liveSticker = liveStickers[i];
                 liveSticker.remove();
             }
             await startWebcam();
@@ -829,7 +834,8 @@ const setCreatePost = async () => {
         const liveStickers = mainContainer.querySelectorAll('.live-sticker');
         const rectContainer = liveStickerContainer.getBoundingClientRect();
 
-        for (const liveSticker of liveStickers) {
+        for (let i = 0; i < liveStickers.length; i++) {
+            const liveSticker = liveStickers[i];
             const rect = liveSticker.getBoundingClientRect();
             const stickerLeftPixel = Math.floor(rect.left - rectContainer.left);
             const stickerTopPixel = Math.floor(rect.top - rectContainer.top);
@@ -861,7 +867,8 @@ const setCreatePost = async () => {
     });
 
     // Sticker Element Click Event
-    for (const stickerElement of stickerElements) {
+    for (let i = 0; i < stickerElements.length; i++) {
+        const stickerElement = stickerElements[i];
         stickerElement.addEventListener('click', (event) => {
             const newSticker = document.createElement('img');
             newSticker.src = event.target.src;
@@ -1150,7 +1157,8 @@ const setCreatePost = async () => {
 
     window.addEventListener('resize', () => {
         const liveStickers = mainContainer.querySelectorAll('.live-sticker');
-        for (const liveSticker of liveStickers) {
+        for (let i = 0; i < liveStickers.length; i++) {
+            const liveSticker = liveStickers[i];
             liveSticker.style.left = changeToPercentage(liveSticker.style.left, LSCwidth);
             liveSticker.style.top = changeToPercentage(liveSticker.style.top, LSCheight);
             liveSticker.style.width = changeToPercentage(liveSticker.style.width, LSCwidth);
@@ -1210,7 +1218,8 @@ const setCreatePost = async () => {
         const liveStickers = mainContainer.querySelectorAll('.live-sticker');
         const rectContainer = liveStickerContainer.getBoundingClientRect();
 
-        for (const liveSticker of liveStickers) {
+        for (let i = 0; i < liveStickers.length; i++) {
+            const liveSticker = liveStickers[i];
             const rect = liveSticker.getBoundingClientRect();
             const stickerLeftPixel = Math.floor(rect.left - rectContainer.left);
             const stickerTopPixel = Math.floor(rect.top - rectContainer.top);
@@ -1243,25 +1252,25 @@ document.addEventListener('click', async (e) => {
 
     if (e.target.id === "like-post") {
         const postId = e.target.getAttribute('post-id');
-        const icon = e.target.querySelector('i');
         const likeCountElement = document.querySelector(`[post-id="${postId}"]#like-count`);
         const session = await (await AJAXGet("current-session.php", { sessionId: getSessionId() })).json();
 
-        if (icon.classList.contains('fa-regular')) { // Like
+        const iconTrue = e.target.querySelector('#like-true');
+        const iconFalse = e.target.querySelector('#like-false');
+
+        if (iconTrue.classList.contains('d-none')) { // Like
             const likeResponse = await AJAXPost("like.controller.php", { userId: session['user-id'], postId: postId });
             if (likeResponse.ok) {
-                icon.classList.remove('fa-regular');
-                icon.classList.add('fa-solid');
-                icon.style.color = '#dc3545';
+                iconTrue.classList.remove('d-none');
+                iconFalse.classList.add('d-none');
                 likeCountElement.textContent = (parseInt(likeCountElement.textContent) + 1).toString();
             }
         }
         else { // Remove Like
             const likeResponse = await AJAXDelete("like.controller.php", { userId: session['user-id'], postId: postId });
             if (likeResponse.ok) {
-                icon.classList.remove('fa-solid');
-                icon.classList.add('fa-regular');
-                icon.style.color = '#ffffff';
+                iconTrue.classList.add('d-none');
+                iconFalse.classList.remove('d-none');
                 likeCountElement.textContent = (parseInt(likeCountElement.textContent) - 1).toString();
             }
         }
@@ -1631,13 +1640,16 @@ const afterPageLoad = async (location) => {
 
     // GENERAL
     const buttons = document.getElementsByTagName('button');
-    for (const button of buttons) {
-        const icons = button.getElementsByTagName('i');
+    for (let i = 0; i < buttons.length; i++) {
+        const button = buttons[i];
+        const icons = button.getElementsByTagName('svg');
         const smalls = button.getElementsByTagName('small');
-        for (const icon of icons) {
+        for (let i = 0; i < icons.length; i++) {
+            const icon = icons[i];
             icon.style.pointerEvents = "none";
         }
-        for (const small of smalls) {
+        for (let i = 0; i < smalls.length; i++) {
+            const small = smalls[i];
             small.style.pointerEvents = "none";
         }
     }

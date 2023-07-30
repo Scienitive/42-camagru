@@ -20,11 +20,22 @@ body {
 
 /* These 2 needs to match each other */
 .fixed-row { 
+  position: relative;
   height: 50vh;
+  object-fit: contain;
 }
 .fixed-height-img {
-  max-height: 50vh;
+  height: 100%;
+  width: 100%;
   object-fit: contain;
+}
+
+.bg-dark {
+  background-color: #212529 !important;
+}
+
+.border-light {
+  border-color: #6c757d !important;
 }
 
 .bg-darker {
@@ -51,7 +62,7 @@ input[type="comment"]:focus {
   outline: none;
 }
 
-#button-send:focus {
+.icon-button:focus {
   border-color: none !important;
   box-shadow: none !important;
   outline: none !important;
