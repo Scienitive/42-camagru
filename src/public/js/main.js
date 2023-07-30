@@ -150,14 +150,16 @@ const AJAXDelete = async (link, jsonData) => {
 //#endregion
 
 //#region UTILITY.JS
-const hash = async (string) => {
-    const utf8 = new TextEncoder().encode(string);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray
-        .map((bytes) => customPadStart(bytes.toString(16), 2, '0'))
-        .join('');
-    return hashHex;
+const hash = (input) => {
+    const prime = 16777619;
+    let hash = 2166136261;
+
+    for (let i = 0; i < input.length; i++) {
+        hash ^= input.charCodeAt(i);
+        hash *= prime;
+    }
+    
+    return hash.toString(16);
 }
 
 const createNewToken = async (username, email, applyToDatabase = true) => {
@@ -1324,6 +1326,7 @@ document.addEventListener('submit', async (e) => {
         }
 
         // HTTP REQUEST
+        console.log(username + emailInput.value);
         const token = await createNewToken(username + emailInput.value, false);
         formData.append('token', token);
 
