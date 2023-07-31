@@ -1602,6 +1602,7 @@ const afterPageLoad = async (location) => {
     // FOOTER
     const footer = document.getElementById('footer-section');
     footer.classList.add('d-none');
+    footer.classList.remove('fixed-bottom');
 
     // MAIN-SECTION SETTINGS
     if (location === '/' || location === '/visitor') {
@@ -1896,6 +1897,10 @@ const urlLocationHandler = async (pathname) => {
     if (route.footerLink !== "") {
         const footerElement = await (await AJAXGetHTML(`footers/${route.footerLink}`)).text();
         document.getElementById('footer-section').innerHTML = footerElement;
+    }
+
+    if (pathname !== undefined) {
+        window.history.replaceState({}, '', window.location.pathname);
     }
     afterPageLoad(location);
 
