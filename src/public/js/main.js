@@ -559,6 +559,13 @@ const loadPosts = async (container, userId, reset = false) => {
             const postResponse = await AJAXDelete("post.controller.php", { postId: post.id });
             if (postResponse.ok) {
                 newElement.remove();
+                const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
+                const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight;
+                if ((scrollTop + window.innerHeight) >= scrollHeight) {
+                    const footer = document.getElementById('footer-section');
+                    footer.classList.remove('d-none');
+                    footer.classList.add('fixed-bottom');
+                }
             }
         }
         deleteButton.addEventListener('click', () => {
@@ -1599,6 +1606,7 @@ const afterPageLoad = async (location) => {
         if ((scrollTop + window.innerHeight) >= scrollHeight) {
             const footer = document.getElementById('footer-section');
             footer.classList.remove('d-none');
+            footer.classList.add('fixed-bottom');
         }
         stopWebcam();
     }
