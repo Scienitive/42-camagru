@@ -1541,11 +1541,11 @@ const afterPageLoad = async (location) => {
     // MAIN-SECTION SETTINGS
     if (location === '/') {
         const mainSection = document.getElementById('main-section');
-        mainSection.classList.remove('flex-grow-1', 'align-items-center');
+        mainSection.classList.remove('d-flex', 'flex-grow-1', 'align-items-center');
     }
     else {
         const mainSection = document.getElementById('main-section');
-        mainSection.classList.add('flex-grow-1', 'align-items-center');
+        mainSection.classList.add('d-flex', 'flex-grow-1', 'align-items-center');
     }
 
     if (location === '/') {
