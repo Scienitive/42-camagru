@@ -296,6 +296,20 @@ const setSettings = async () => {
     const notifOn = document.getElementById('notification-on');
     const alertElement = document.getElementById('alert');
 
+    const customFilter = (inputString) => {
+        const regex = /^[a-zA-Z0-9]/;
+        let output = "";
+        for (let i = 0; i < inputString.length; i++) {
+            if (inputString[i].match(regex)) {
+                output += inputString[i];
+            }
+            if (output.length >= 4) {
+                break;
+            }
+        }
+        return output;
+    }
+
     const saveButtonModify = () => {
         if (emailInput.value === '') {
             saveButton.disabled = false;
@@ -335,7 +349,7 @@ const setSettings = async () => {
         }
 
         const mailSubject = "Camagru - Email Verification";
-        const mailContent = `Hi ${user.username},\n\nYour new email verification code is: ${user.verification_token.substring(0,4).toUpperCase()}\n\nThanks,\n- Camagru`;
+        const mailContent = `Hi ${user.username},\n\nYour new email verification code is: ${customFilter(user.verification_token).toUpperCase()}\n\nThanks,\n- Camagru`;
         const mailResponse = await AJAXPost("send-mail.controller.php", { email: newEmail, subject: mailSubject, content: mailContent });
         if (mailResponse.ok) {
             emailSent = true;
@@ -374,7 +388,7 @@ const setSettings = async () => {
         const newUsername = usernameInput.value !== '' ? usernameInput.value : null;
         const newPassword = passwordInput.value !== '' ? passwordInput.value : null;
         const newNotification = notifOn.checked ? true : false;
-        
+
         const jsonData = {};
         let errorMessage = "";
         if (newEmail) {
@@ -382,7 +396,7 @@ const setSettings = async () => {
             if (!emailRegex.test(newEmail)) {errorMessage = "Please provide a valid email address.";}
             else if (user.email === newEmail) {errorMessage = `Your email address is already ${newEmail}.`;}
             else if (!verification) {errorMessage = "Please enter the code that has been sent to your new email.";}
-            else if (user.verification_token.substring(0, 4).toUpperCase() !== verification) {errorMessage = "Wrong code.";}
+            else if (customFilter(user.verification_token).toUpperCase() !== verification) {errorMessage = "Wrong code.";}
 
             if (errorMessage !== "") {
                 alertModify(alertElement, errorMessage);
@@ -854,12 +868,18 @@ const setCreatePost = async () => {
 
         const imageResponse = await AJAXPost("image-download.controller.php", { baseImage: extractString(imageElement.src), height: imageElement.offsetHeight, stickerArray: JSON.stringify(stickerInformation) });
         if (imageResponse.ok) {
+            const browserInfo = getBrowserInfo();
             const blob = await imageResponse.blob();
             const imageUrl = URL.createObjectURL(blob);
             const anchor = document.createElement('a');
             anchor.href = imageUrl;
-            anchor.download = "camagru.png";
-            anchor.click();
+            if (browserInfo.name === 'Firefox' && parseInt(browserInfo.version) < 70) {
+                window.open(imageUrl, '_blank');
+            }
+            else {
+                anchor.download = "camagru.png";
+                anchor.click();
+            }
             anchor.remove();
         }
     });
@@ -1245,6 +1265,10 @@ const setCreatePost = async () => {
                 await setSessionVariable('post-successful');
                 window.location.replace("/post-successful");
             }
+            else {
+                await setSessionVariable('post-unsuccessful');
+                window.location.replace("/post-unsuccessful");
+            }
         }
     });
 }
@@ -1326,7 +1350,6 @@ document.addEventListener('submit', async (e) => {
         }
 
         // HTTP REQUEST
-        console.log(username + emailInput.value);
         const token = await createNewToken(username + emailInput.value, false);
         formData.append('token', token);
 
@@ -1495,8 +1518,9 @@ document.addEventListener('submit', async (e) => {
             likedText.classList.add('mb-2');
 
             const postUsername = (document.querySelector(`[post-id="${postId}"]#post-username`)).textContent;
-            if (postUsername !== username) {
-                const postMail = (await (await AJAXGet("user.controller.php", { username: postUsername })).json()).email;
+            const receiver = await (await AJAXGet("user.controller.php", { username: postUsername })).json();
+            if (receiver.email_notification && postUsername !== username) {
+                const postMail = receiver.email;
                 const mailSubject = "Camagru - New Comment On Your Post";
                 const mailContent = `Hi ${postUsername},\n\nOne of your posts just got a new comment from ${username}.\n--> ${username}: ${comment}\n\nThanks,\n- Camagru`;
                 await AJAXPost("send-mail.controller.php", { email: postMail, subject: mailSubject, content: mailContent });
@@ -1507,7 +1531,12 @@ document.addEventListener('submit', async (e) => {
 })
 
 // Scroll Event Listener
+let isScorlling = false;
 document.addEventListener('scroll', async () => {
+    if (isScorlling) {
+        return;
+    }
+    isScorlling = true;
     if (window.location.pathname === '/') {
         const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
         const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight;
@@ -1522,6 +1551,7 @@ document.addEventListener('scroll', async () => {
             }
         }
     }
+    isScorlling = false;
 });
 
 // Event Listener For Page Loads
@@ -1537,6 +1567,9 @@ const afterPageLoad = async (location) => {
             window.location.replace(`/?user=${session['user-id']}`);
         }
     });
+    // FOOTER
+    const footer = document.getElementById('footer-section');
+    footer.classList.add('d-none');
 
     // MAIN-SECTION SETTINGS
     if (location === '/') {
@@ -1555,9 +1588,15 @@ const afterPageLoad = async (location) => {
         const post = document.getElementById('post-container');
         if (!post) {
             const mainSection = document.getElementById('main-section');
-            mainSection.classList.add('flex-grow-1', 'align-items-center');
+            mainSection.classList.add('d-flex', 'flex-grow-1', 'align-items-center');
             const looksEmptyElement = convertStringToElement(await (await AJAXGetHTML(`mains/looks-empty.html`)).text());
             container.appendChild(looksEmptyElement);
+            const footer = document.getElementById('footer-section');
+            footer.classList.remove('d-none');
+        }
+        const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
+        const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight;
+        if ((scrollTop + window.innerHeight) >= scrollHeight) {
             const footer = document.getElementById('footer-section');
             footer.classList.remove('d-none');
         }
@@ -1775,8 +1814,14 @@ const urlRoutes = {
 const urlRoute = (event) => {
     event.preventDefault();
     const absoluteURL = event.target.href;
-    const url = new URL(absoluteURL);
-    const relativePath = url.pathname.length > 0 ? url.pathname : "/";
+    let relativePath;
+    if (absoluteURL.length <= 0) {
+        relativePath = "blank";
+    }
+    else {
+        const url = new URL(absoluteURL);
+        relativePath = url.pathname.length > 0 ? url.pathname : "/";
+    }
     if (relativePath === window.location.pathname) {
         window.location.replace(window.location.pathname);
     }

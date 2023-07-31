@@ -5,7 +5,6 @@ $pdo = require(__DIR__ . "/../../models/database.php");
 $sql = "INSERT INTO posts (user_id, image)
         VALUES (?, ?)";
 
-
 try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$_POST['userId'], $_POST['imageFileName']]);
