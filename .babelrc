@@ -9,5 +9,8 @@
                 }
             }
         ]
+    ],
+    "plugins": [
+        "@babel/plugin-transform-object-set-prototype-of-to-assign"
     ]
 }

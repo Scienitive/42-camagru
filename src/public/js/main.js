@@ -490,7 +490,11 @@ const loadPosts = async (container, userId, reset = false) => {
     if (posts.length <= 0) {return;}
     lastPostId = posts[posts.length - 1].id;
     const postElement = convertStringToElement(await (await AJAXGetHTML(`mains/post.html`)).text());
+    let loggedIn = false;
     const session = await (await AJAXGet("current-session.php", { sessionId: getSessionId() })).json();
+    if (session.hasOwnProperty('user-id')) {
+        loggedIn = true;
+    }
     
     for (let i = 0; i < posts.length; i++) {
         const post = posts[i];
@@ -513,7 +517,12 @@ const loadPosts = async (container, userId, reset = false) => {
         newElement.setAttribute('post-id', post.id.toString());
         usernameElement.textContent = post.username;
         const handleClick = () => {
-            window.location.replace(`/?user=${post.user_id}`);
+            if (loggedIn) {
+                window.location.replace(`/?user=${post.user_id}`);
+            }
+            else {
+                window.location.replace(`/visitor?user=${post.user_id}`);
+            }
         };
         usernameElement.onclick = handleClick;
         usernameElement.setAttribute('post-id', post.id.toString());
@@ -524,18 +533,32 @@ const loadPosts = async (container, userId, reset = false) => {
         if (browserInfo.name === 'Firefox' && parseInt(browserInfo.version) < 60) {
             dateElement.classList.add('d-none');
         }
-        likeButton.setAttribute('post-id', post.id.toString());
         commentContainer.setAttribute('post-id', post.id.toString());
-        commentForm.setAttribute('post-id', post.id.toString());
 
-        const likeResponse = await AJAXGet("like.controller.php", { userId: session['user-id'], postId: post.id.toString() });
-        if (likeResponse.ok && (await likeResponse.text()) !== '0') {
-            const icon = likeButton.querySelector('#like-true');
-            icon.classList.remove('d-none');
+        if (loggedIn) {
+            commentForm.setAttribute('post-id', post.id.toString());
+            likeButton.setAttribute('post-id', post.id.toString());
+
+            const likeResponse = await AJAXGet("like.controller.php", { userId: session['user-id'], postId: post.id.toString() });
+            if (likeResponse.ok && (await likeResponse.text()) !== '0') {
+                const icon = likeButton.querySelector('#like-true');
+                icon.classList.remove('d-none');
+            }
+            else if (likeResponse.ok) {
+                const icon = likeButton.querySelector('#like-false');
+                icon.classList.remove('d-none');
+            }
         }
-        else if (likeResponse.ok) {
-            const icon = likeButton.querySelector('#like-false');
-            icon.classList.remove('d-none');
+        else {
+            commentForm.remove();
+            likeButton.remove();
+            deleteButton.remove();
+            if (deleteDialog) {
+                deleteDialog.remove();
+            }
+            const divider2 = newElement.querySelector('#divider-2');
+            divider2.remove();
+            commentContainer.classList.add('mb-2');
         }
 
         await loadComments(post.id, commentContainer);
@@ -551,40 +574,42 @@ const loadPosts = async (container, userId, reset = false) => {
             likedText.classList.add('mb-2');
         }
 
-        if (post.user_id == session['user-id']) {
-            deleteButton.classList.remove('d-none');
-        }
+        if (loggedIn) {
+            if (post.user_id == session['user-id']) {
+                deleteButton.classList.remove('d-none');
+            }
 
-        const deletePost = async () => {
-            const postResponse = await AJAXDelete("post.controller.php", { postId: post.id });
-            if (postResponse.ok) {
-                newElement.remove();
-                const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
-                const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight;
-                if ((scrollTop + window.innerHeight) >= scrollHeight) {
-                    const footer = document.getElementById('footer-section');
-                    footer.classList.remove('d-none');
-                    footer.classList.add('fixed-bottom');
+            const deletePost = async () => {
+                const postResponse = await AJAXDelete("post.controller.php", { postId: post.id });
+                if (postResponse.ok) {
+                    newElement.remove();
+                    const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
+                    const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight;
+                    if ((scrollTop + window.innerHeight) >= scrollHeight) {
+                        const footer = document.getElementById('footer-section');
+                        footer.classList.remove('d-none');
+                        footer.classList.add('fixed-bottom');
+                    }
                 }
             }
-        }
-        deleteButton.addEventListener('click', () => {
-            if (isDialogSupported) {
-                deleteDialog.showModal();
-                const realDelete = deleteDialog.querySelector('#delete');
-                const cancel = deleteDialog.querySelector('#cancel');
-                realDelete.addEventListener('click', async () => {
+            deleteButton.addEventListener('click', () => {
+                if (isDialogSupported) {
+                    deleteDialog.showModal();
+                    const realDelete = deleteDialog.querySelector('#delete');
+                    const cancel = deleteDialog.querySelector('#cancel');
+                    realDelete.addEventListener('click', async () => {
+                        deletePost();
+                        deleteDialog.close();
+                    });
+                    cancel.addEventListener('click', () => {
+                        deleteDialog.close();
+                    });
+                }
+                else {
                     deletePost();
-                    deleteDialog.close();
-                });
-                cancel.addEventListener('click', () => {
-                    deleteDialog.close();
-                });
-            }
-            else {
-                deletePost();
-            }
-        })
+                }
+            })
+        }
 
         container.appendChild(newElement);
     }
@@ -1544,7 +1569,7 @@ document.addEventListener('scroll', async () => {
         return;
     }
     isScorlling = true;
-    if (window.location.pathname === '/') {
+    if (window.location.pathname === '/' || window.location.pathname === '/visitor') {
         const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
         const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight;
         if ((scrollTop + window.innerHeight) >= scrollHeight) {
@@ -1567,7 +1592,7 @@ const afterPageLoad = async (location) => {
     document.addEventListener('click', async (event) => {
         if (event.target.id === 'signout-button') {
             await AJAXDelete("session.controller.php", { sessionId: getSessionId() });
-            window.location.replace("/");
+            window.location.replace("/visitor");
         }
         else if (event.target.id === 'profile-button') {
             const session = await (await AJAXGet("current-session.php", { sessionId: getSessionId() })).json();
@@ -1579,7 +1604,7 @@ const afterPageLoad = async (location) => {
     footer.classList.add('d-none');
 
     // MAIN-SECTION SETTINGS
-    if (location === '/') {
+    if (location === '/' || location === '/visitor') {
         const mainSection = document.getElementById('main-section');
         mainSection.classList.remove('d-flex', 'flex-grow-1', 'align-items-center');
     }
@@ -1588,11 +1613,13 @@ const afterPageLoad = async (location) => {
         mainSection.classList.add('d-flex', 'flex-grow-1', 'align-items-center');
     }
 
-    if (location === '/') {
+    if (location === '/' || location === '/visitor') {
         const urlParams = customURLSearchParams(window.location.search);
         const container = document.getElementById('main-posts');
         await loadPosts(container, urlParams.get('user'), true);
         const post = document.getElementById('post-container');
+        const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
+        const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight;
         if (!post) {
             const mainSection = document.getElementById('main-section');
             mainSection.classList.add('d-flex', 'flex-grow-1', 'align-items-center');
@@ -1601,9 +1628,7 @@ const afterPageLoad = async (location) => {
             const footer = document.getElementById('footer-section');
             footer.classList.remove('d-none');
         }
-        const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
-        const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight;
-        if ((scrollTop + window.innerHeight) >= scrollHeight) {
+        else if ((scrollTop + window.innerHeight) >= scrollHeight) {
             const footer = document.getElementById('footer-section');
             footer.classList.remove('d-none');
             footer.classList.add('fixed-bottom');
@@ -1747,6 +1772,13 @@ const urlRoutes = {
         mainLink: "home.html",
         footerLink: "footer.html"
     },
+    "/visitor": {
+        name: "/visitor",
+        title: "Camagru",
+        headerLink: "visitor.html",
+        mainLink: "home.html",
+        footerLink: "footer.html"
+    },
     "/login": {
         name: "/login",
         title: "Camagru | Login",
@@ -1882,17 +1914,20 @@ const urlLocationHandler = async (pathname) => {
 const changeRoute = async (route) => {
     const session = await (await AJAXGet("current-session.php", { sessionId: getSessionId() })).json();
 
-    if (route.name === "/" || route.name === "/login") {
+    if (route.name === "/" || route.name === "/visitor") {
+        route = session.hasOwnProperty('user-id') ? urlRoutes["/"] : urlRoutes["/visitor"];
+    }
+    else if (route.name === "/login") {
         route = session.hasOwnProperty('user-id') ? urlRoutes["/"] : urlRoutes["/login"];
     }
     else if (route.name === "/signup") {
         route = session.hasOwnProperty('user-id') ? urlRoutes["/"] : urlRoutes["/signup"];
     }
     else if (route.name === "/settings") {
-        route = session.hasOwnProperty('user-id') ? urlRoutes["/settings"] : urlRoutes["/403"];
+        route = session.hasOwnProperty('user-id') ? urlRoutes["/settings"] : urlRoutes["/login"];
     }
     else if (route.name === "/create-post") {
-        route = session.hasOwnProperty('user-id') ? urlRoutes["/create-post"] : urlRoutes["/403"];
+        route = session.hasOwnProperty('user-id') ? urlRoutes["/create-post"] : urlRoutes["/login"];
     }
     else if (route.name === "/verification-sent") {
         route = session.hasOwnProperty('verification-sent') ? urlRoutes["/verification-sent"] : urlRoutes["/403"];

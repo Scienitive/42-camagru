@@ -12,6 +12,7 @@
   "dependencies": {
     "@babel/cli": "^7.22.9",
     "@babel/core": "^7.22.9",
+    "@babel/plugin-transform-object-set-prototype-of-to-assign": "^7.22.5",
     "@babel/preset-env": "^7.22.9"
   }
 }
