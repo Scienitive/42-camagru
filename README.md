@@ -2,6 +2,10 @@
 
 This project is about making a website for posting images with stickers.
 
+## <a href="https://camagru.alyasar.dev">Live Site</a>
+
+This is a live website of the project that you can interact with. However all the data resets every 24 hours (00:00 GMT).
+
 ## Images & Gifs
 ![Visual](./assets/1.png)
 ![Visual](./assets/2.png)
