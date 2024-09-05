@@ -33,3 +33,6 @@ CREATE TABLE IF NOT EXISTS likes (
   FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
   UNIQUE KEY user_post_unique (user_id, post_id)
 );
+
+INSERT INTO users (email, username, password, verification_token, is_verified)
+VALUES ('scienitive77@gmail.com', 'Scienitive', '$2y$10$bWalLkPJOSlmHgYZxzL.guH3hrg0LRVRvUokm3rF9i2ubSz6RLBdS', 'verification_token_here', 1);
